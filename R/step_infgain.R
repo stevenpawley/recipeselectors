@@ -10,6 +10,7 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have been
 #'   estimated
+#' @param type character, one of c("infogain", "gainratio", "symuncert")
 #' @param k numeric, if an integer value is supplied, then this represents the number of best
 #' scoring features to select, if a decimal between 0 and 1 is supplied then then top percentile
 #' of features are selected
@@ -26,27 +27,29 @@
 #' @return a step_mrmr object
 #' @export
 #' @importFrom recipes ellipse_check rand_id add_step
-step_mrmr <- function(
+step_infgain <- function(
   recipe, ...,
   target = NULL,
   role = NA,
   trained = FALSE,
   k = NULL,
-  threads = 0,
+  type = "infogain",
+  threads = 1,
   to_retain = NULL,
   skip = FALSE,
-  id = rand_id("mrmr")) {
+  id = rand_id("infgain")) {
 
   terms <- ellipse_check(...)
 
   add_step(
     recipe,
-    step_mrmr_new(
+    step_infgain_new(
       terms = terms,
       trained = trained,
       target = target,
       role = role,
       k = k,
+      type = type,
       threads = threads,
       to_retain = to_retain,
       skip = skip,
@@ -57,20 +60,21 @@ step_mrmr <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @export
-step_mrmr_new <- function(terms, role, trained, target, k, threads, to_retain, skip, id) {
-    step(
-      subclass = "mrmr", # set class of new objects to 'step_mrmr'
-      terms = terms,
-      role = role,
-      trained = trained,
-      target = target,
-      k = k,
-      threads = threads,
-      to_retain = to_retain,
-      skip = skip,
-      id = id
-    )
-  }
+step_infgain_new <- function(terms, role, trained, target, k, type, threads, to_retain, skip, id) {
+  step(
+    subclass = "infgain",
+    terms = terms,
+    role = role,
+    trained = trained,
+    target = target,
+    k = k,
+    type = type,
+    threads = threads,
+    to_retain = to_retain,
+    skip = skip,
+    id = id
+  )
+}
 
 # define the estimation procedure
 # x is the step_mrmr object
@@ -78,25 +82,25 @@ step_mrmr_new <- function(terms, role, trained, target, k, threads, to_retain, s
 # info is a tibble that contains information on the current set of data
 # this is updated each time as each step function is evaluated by its prep method
 #' @export
-#' @importFrom praznik MRMR
+#' @importFrom FSelectorRcpp information_gain
 #' @importFrom recipes terms_select
-prep.step_mrmr <- function(x, training, info = NULL, ...) {
+prep.step_infgain <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   # this term should refer to the response variable for step_mrmr
   col_names <- terms_select(terms = x$terms, info = info)
   target_name <- x$target
 
-  # perform mrmr using all features
-  X <- training[, col_names]
-  y <- training[[target_name]]
+  f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
 
-  # some checks
-  if (any(sapply(X, class)) == "factor")
-    stop("mrmr step method cannot be applied to factors")
+  # check for factors
+  col_types <- sapply(training[, col_names], class, USE.NAMES = FALSE)
+  if ("factor" %in% col_types) discIntegers = TRUE else discIntegers = FALSE
 
-    # perform mrmr using all features
-  mi <- MRMR(X, y, length(col_names), x$threads)
+  ig_scores <- information_gain(
+    formula = f, data = training,type = x$type, threads = x$threads, discIntegers = discIntegers, equal = TRUE)
+
+  ig_scores <- ig_scores[order(ig_scores$importance, decreasing = TRUE), ]
 
   # select top scoring features
   if (is.null(x$k))
@@ -105,16 +109,17 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
   if (x$k %% 1 != 0)
     x$k <- ceiling(length(col_names) * x$k)
 
-  to_retain  <- c(names(mi$selection)[1:x$k], target_name)
+  to_retain  <- c(ig_scores[1:x$k, "attributes"], target_name)
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_mrmr_new(
+  step_infgain_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
     target = target_name,
     k = x$k,
+    type = x$type,
     threads = x$threads,
     to_retain = to_retain,
     skip = x$skip,
@@ -128,7 +133,7 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
 # new_data is a tibble of data to be processed
 #' @export
 #' @importFrom tibble as_tibble
-bake.step_mrmr <- function(object, new_data, ...) {
+bake.step_infgain <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 
