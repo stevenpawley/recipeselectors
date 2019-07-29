@@ -11,5 +11,6 @@ LazyData: true
 Imports:
   recipes,
   praznik,
-  tibble
+  tibble,
+  FSelectorRcpp
 RoxygenNote: 6.1.1
