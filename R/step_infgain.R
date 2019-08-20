@@ -11,6 +11,8 @@
 #' @param trained A logical to indicate if the quantities for preprocessing have been
 #'   estimated
 #' @param type character, one of c("infogain", "gainratio", "symuncert")
+#' @param target character, name of response variable to use to evaluate information gain
+#' value against the predictors
 #' @param k numeric, if an integer value is supplied, then this represents the number of best
 #' scoring features to select, if a decimal between 0 and 1 is supplied then then top percentile
 #' of features are selected

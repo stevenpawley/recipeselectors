@@ -1,24 +1,6 @@
-# test_preproc <- preproc$terrain
-#
-# test_preproc <- test_preproc %>% step_rfe(
-#   all_predictors(),
-#   target = "pick_thk_m",
-#   incr = 3,
-#   model = regr_et_rfe %>% set_args(min_n = 1, trees = 10))
-#
-# test <- test_preproc %>% prep()
-# test %>% juice()
-#
-# regr_et %>%
-#   set_args(min_n = 1, trees = 50, mtry = .cols()) %>%
-#   fit(formula(test),
-#       test %>% juice())
-
-
-#' Recursive Feature Elimation (using Ranger)
+#' Select From Feature Importances (ranger)
 #'
-#' Feature selection step using random forests recursive feature
-#' elimination.
+#' Feature selection step based on ranger feature importance scores
 #'
 #' @param recipe A recipe object. The step will be added to the sequence of operations
 #'  for this recipe
@@ -31,14 +13,9 @@
 #' @param trained A logical to indicate if the quantities for preprocessing have been
 #'   estimated
 #' @param model parsnip rand_forest model specification using the `ranger` engine
-#' @param incr integer, increment step size to use in recursive feature elimination, default is 1
-#' @param tol numeric, tolerance to use when selecting the best subset of features that results in
-#' the lowest error score (r2 for regression models, fraction of missclassified for classification
-#' models). A tol value of 0 will result in the optimal subset of features being selected based on
-#' those that produce the lowest out-of-bag error score. A tol value > 0 will select the smallest
-#' group of features that are within tol of the lowest score.
+#' @param threshold numeric, percentile of top scoring features to retain
 #' @param to_retain character, names of features to retain
-#' @param scores tibble, tibble of scores per remaining features
+#' @param scores tibble, tibble of feature importance scores
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run, some
 #'   operations may not be able to be conducted on new data (e.g. processing the outcome
@@ -46,34 +23,31 @@
 #'   computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
-#' @return a step_rfe object
+#' @return a step_fimp object
 #' @export
-step_rfe <- function(
+step_fimp <- function(
   recipe, ...,
   target = NULL,
   role = NA,
   trained = FALSE,
   model = NULL,
-  incr = 1,
-  tol = 0,
-  type = "rfe",
+  threshold = NULL,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("rfe")) {
+  id = rand_id("fimp")) {
 
   terms <- ellipse_check(...)
 
   add_step(
     recipe,
-    step_rfe_new(
+    step_fimp_new(
       terms = terms,
       trained = trained,
       target = target,
       role = role,
       model = model,
-      incr = incr,
-      tol = tol,
+      threshold = threshold,
       to_retain = to_retain,
       scores = scores,
       skip = skip,
@@ -84,17 +58,16 @@ step_rfe <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @export
-step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores, skip,
+step_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores, skip,
                          id) {
   step(
-    subclass = "rfe",
+    subclass = "fimp",
     terms = terms,
     role = role,
     trained = trained,
     target = target,
     model = model,
-    incr = incr,
-    tol = tol,
+    threshold = threshold,
     to_retain = to_retain,
     scores = scores,
     skip = skip,
@@ -103,7 +76,7 @@ step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_reta
 }
 
 
-prep.step_rfe <- function(x, training, info = NULL, ...) {
+prep.step_fimp <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
@@ -111,63 +84,32 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
 
   # fit initial model and get feature importances
   f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
-
-  initial_model <- x$model %>%
-    set_args(mtry = length(formula.tools::rhs.vars(f))) %>%
-    fit(f, training)
+  initial_model <- x$model %>% fit(f, training)
 
   feature_ranking <- initial_model$fit$variable.importance
 
   feature_ranking <- tibble(
-    predictor = names(feature_ranking),
-    importance = feature_ranking)
+    feature = names(feature_ranking),
+    score = feature_ranking)
 
-  feature_ranking <- feature_ranking %>% arrange(desc(importance))
-
-  # rfe using ranger
-  fea_incr <- seq(length(col_names), 1, by = -x$incr)
-
-  scores <- sapply(fea_incr, function(n) {
-
-    selected_feature_names <- feature_ranking[1:n, ][["predictor"]]
-    selected_feature_names <- paste0(selected_feature_names, collapse = "+")
-    f_selected <- as.formula(paste0(paste0(target_name, " ~ "), selected_feature_names))
-
-    n_var <- length(formula.tools::rhs.vars(f_selected))
-
-    rfe_model <- x$model %>%
-      set_args(mtry = n_var) %>%
-      fit(f_selected, training)
-
-    rfe_model$fit$prediction.error
-  })
-
-  scores <- tibble(
-    n = fea_incr,
-    score = scores
-  )
+  feature_ranking <- feature_ranking %>% arrange(desc(score))
 
   # select k best features
-  if (x$tol == 0) {
-    best_n <- scores[which.min(scores$score), ][["n"]]
-  } else {
-    best_n <- min(which(scores$score < min(scores$score) + x$tol))
-  }
-  to_retain <- c(feature_ranking[1:best_n, ][["predictor"]], target_name)
-
+  score_to_exceed <- quantile(fimp$score, c(x$threshold))
+  best_n <- which(feature_ranking$score >= score_to_exceed)
+  to_retain <- c(feature_ranking[best_n, ][["feature"]], target_name)
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_rfe_new(
+  step_fimp_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
     target = target_name,
     model = x$model,
-    incr = x$incr,
-    tol = x$tol,
+    threshold = x$threshold,
     to_retain = to_retain,
-    scores = scores,
+    scores = feature_ranking,
     skip = x$skip,
     id = x$id
   )
@@ -179,7 +121,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
 # new_data is a tibble of data to be processed
 #' @export
 #' @importFrom tibble as_tibble
-bake.step_rfe <- function(object, new_data, ...) {
+bake.step_fimp <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 
