@@ -1,4 +1,4 @@
-#' mRMR feature selection recipe
+#' mRMR feature selection step
 #'
 #' Initial function - simple wrapper around add_step
 #'
@@ -10,6 +10,7 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have been
 #'   estimated
+#' @param target character, name of response variable to evaluation MRMR against
 #' @param k numeric, if an integer value is supplied, then this represents the number of best
 #' scoring features to select, if a decimal between 0 and 1 is supplied then then top percentile
 #' of features are selected
@@ -55,8 +56,8 @@ step_mrmr <- function(
   )
 }
 
-# wrapper around 'step' function that sets the class of new step objects
-#' @export
+# Wrapper around 'step' function that sets the class of new step objects
+#' @importFrom recipes step
 step_mrmr_new <- function(terms, role, trained, target, k, threads, to_retain, skip, id) {
     step(
       subclass = "mrmr", # set class of new objects to 'step_mrmr'
@@ -72,33 +73,36 @@ step_mrmr_new <- function(terms, role, trained, target, k, threads, to_retain, s
     )
   }
 
-# define the estimation procedure
-# x is the step_mrmr object
-# training is a tibble that has the training set data
-# info is a tibble that contains information on the current set of data
-# this is updated each time as each step function is evaluated by its prep method
+#' Define the estimation procedure
+#'
+#' @param x the step object
+#'
+#' @param training a tibble that has the training set data
+#' @param info a tibble that contains information on the current set of data.
+#' This is updated each time as each step function is evaluated by its prep method
+#' @param ... Currently unused
+#'
 #' @export
 #' @importFrom praznik MRMR
 #' @importFrom recipes terms_select
 prep.step_mrmr <- function(x, training, info = NULL, ...) {
 
-  # first translate the terms argument into column name
-  # this term should refer to the response variable for step_mrmr
+  # First translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
   target_name <- x$target
 
-  # perform mrmr using all features
+  # Perform mrmr using all features
   X <- training[, col_names]
   y <- training[[target_name]]
 
-  # some checks
+  # Some checks
   if (any(sapply(X, class)) == "factor")
     stop("mrmr step method cannot be applied to factors")
 
-    # perform mrmr using all features
+  # Perform MRMR using all features
   mi <- MRMR(X, y, length(col_names), x$threads)
 
-  # select top scoring features
+  # Select top scoring features
   if (is.null(x$k))
     x$k <- length(col_names)
 
@@ -107,8 +111,8 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
 
   to_retain  <- c(names(mi$selection)[1:x$k], target_name)
 
-  ## Use the constructor function to return the updated object.
-  ## Note that `trained` is set to TRUE
+  # Use the constructor function to return the updated object
+  # Note that `trained` is set to TRUE
   step_mrmr_new(
     terms = x$terms,
     trained = TRUE,
@@ -122,10 +126,13 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
   )
 }
 
-# prep method does not apply the method, it only calculates any required data
-# the bake method is defined to do this
-# object is the updated step function that has been through the corresponding prep code
-# new_data is a tibble of data to be processed
+#' bake method to apply the method from prep to new_data
+#'
+#' @param object is the updated step function that has been through the corresponding prep code
+#'
+#' @param new_data is a tibble of data to be processed
+#' @param ... currently unused
+#'
 #' @export
 #' @importFrom tibble as_tibble
 bake.step_mrmr <- function(object, new_data, ...) {

@@ -1,16 +1,23 @@
 Package: extrarecipes
 Type: Package
-Title: Feature selection methods as part of a recipes preprocessing pipeline
-Version: 0.1.0
-Author: Who wrote it
+Title: Feature selection steps to be used in conjunction with the `recipes` package
+Version: 0.0.1
+Author: Steven Pawley
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
-Description: Provides recipes for feature selection
-License: GPL-2
+Description: Provides addition steps for feature selection to be used with the `recipes` package.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-  recipes,
-  praznik,
-  tibble,
-  FSelectorRcpp
+    recipes,
+    praznik,
+    tibble,
+    FSelectorRcpp,
+    formula.tools,
+    dplyr,
+    parsnip,
+    rlang,
+    magrittr
 RoxygenNote: 6.1.1
+Suggests: 
+    testthat

@@ -2,12 +2,11 @@
 % Please edit documentation in R/step_rfe.R
 \name{step_rfe}
 \alias{step_rfe}
-\title{Recursive Feature Elimation (using Ranger)}
+\title{Recursive Feature Elimation using `ranger``}
 \usage{
 step_rfe(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  model = NULL, incr = 1, tol = 0, type = "rfe",
-  to_retain = NULL, scores = NULL, skip = FALSE,
-  id = rand_id("rfe"))
+  model = NULL, incr = 1, tol = 0, to_retain = NULL,
+  scores = NULL, skip = FALSE, id = rand_id("rfe"))
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of operations

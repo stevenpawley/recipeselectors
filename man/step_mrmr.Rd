@@ -2,7 +2,7 @@
 % Please edit documentation in R/step_mrmr.R
 \name{step_mrmr}
 \alias{step_mrmr}
-\title{mRMR feature selection recipe}
+\title{mRMR feature selection step}
 \usage{
 step_mrmr(recipe, ..., target = NULL, role = NA, trained = FALSE,
   k = NULL, threads = 0, to_retain = NULL, skip = FALSE,
@@ -15,6 +15,8 @@ for this recipe}
 \item{...}{One or more selector functions to choose which variables are affected by the
 step. See selections() for more details. For the tidy method, these are not currently
 used}
+
+\item{target}{character, name of response variable to evaluation MRMR against}
 
 \item{role}{Not used by this step since no new variables are created}
 

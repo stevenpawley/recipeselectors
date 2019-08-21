@@ -1,21 +1,4 @@
-# test_preproc <- preproc$terrain
-#
-# test_preproc <- test_preproc %>% step_rfe(
-#   all_predictors(),
-#   target = "pick_thk_m",
-#   incr = 3,
-#   model = regr_et_rfe %>% set_args(min_n = 1, trees = 10))
-#
-# test <- test_preproc %>% prep()
-# test %>% juice()
-#
-# regr_et %>%
-#   set_args(min_n = 1, trees = 50, mtry = .cols()) %>%
-#   fit(formula(test),
-#       test %>% juice())
-
-
-#' Recursive Feature Elimation (using Ranger)
+#' Recursive Feature Elimation using `ranger``
 #'
 #' Feature selection step using random forests recursive feature
 #' elimination.
@@ -56,7 +39,6 @@ step_rfe <- function(
   model = NULL,
   incr = 1,
   tol = 0,
-  type = "rfe",
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
@@ -82,8 +64,8 @@ step_rfe <- function(
   )
 }
 
-# wrapper around 'step' function that sets the class of new step objects
-#' @export
+# Wrapper around 'step' function that sets the class of new step objects
+#' @importFrom recipes step
 step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores, skip,
                          id) {
   step(
@@ -102,7 +84,21 @@ step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_reta
   )
 }
 
-
+#' Define the estimation procedure
+#'
+#' @param x the step object
+#'
+#' @param training a tibble that has the training set data
+#' @param info a tibble that contains information on the current set of data.
+#' This is updated each time as each step function is evaluated by its prep method
+#' @param ... Currently unused
+#'
+#' @export
+#' @importFrom formula.tools rhs.vars
+#' @importFrom tibble tibble
+#' @importFrom parsnip set_args fit
+#' @importFrom dplyr arrange desc
+#' @importFrom rlang sym
 prep.step_rfe <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
@@ -113,7 +109,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
   f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
 
   initial_model <- x$model %>%
-    set_args(mtry = length(formula.tools::rhs.vars(f))) %>%
+    set_args(mtry = length(rhs.vars(f))) %>%
     fit(f, training)
 
   feature_ranking <- initial_model$fit$variable.importance
@@ -122,7 +118,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
     predictor = names(feature_ranking),
     importance = feature_ranking)
 
-  feature_ranking <- feature_ranking %>% arrange(desc(importance))
+  feature_ranking <- feature_ranking %>% arrange(desc(!! sym("importance")))
 
   # rfe using ranger
   fea_incr <- seq(length(col_names), 1, by = -x$incr)
@@ -133,7 +129,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
     selected_feature_names <- paste0(selected_feature_names, collapse = "+")
     f_selected <- as.formula(paste0(paste0(target_name, " ~ "), selected_feature_names))
 
-    n_var <- length(formula.tools::rhs.vars(f_selected))
+    n_var <- length(rhs.vars(f_selected))
 
     rfe_model <- x$model %>%
       set_args(mtry = n_var) %>%
@@ -173,10 +169,13 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
   )
 }
 
-# prep method does not apply the method, it only calculates any required data
-# the bake method is defined to do this
-# object is the updated step function that has been through the corresponding prep code
-# new_data is a tibble of data to be processed
+#' bake method to apply the method from prep to new_data
+#'
+#' @param object is the updated step function that has been through the corresponding prep code
+#'
+#' @param new_data is a tibble of data to be processed
+#' @param ... currently unused
+#'
 #' @export
 #' @importFrom tibble as_tibble
 bake.step_rfe <- function(object, new_data, ...) {

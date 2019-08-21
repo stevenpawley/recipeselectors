@@ -2,7 +2,7 @@
 % Please edit documentation in R/step_infgain.R
 \name{step_infgain}
 \alias{step_infgain}
-\title{mRMR feature selection recipe}
+\title{Information gain feature selection step}
 \usage{
 step_infgain(recipe, ..., target = NULL, role = NA, trained = FALSE,
   k = NULL, type = "infogain", threads = 1, to_retain = NULL,
@@ -44,8 +44,8 @@ computations for subsequent operations}
 \item{id}{A character string that is unique to this step to identify it}
 }
 \value{
-a step_mrmr object
+a step_infgain object
 }
 \description{
-Initial function - simple wrapper around add_step
+Information gain feature selection step
 }
