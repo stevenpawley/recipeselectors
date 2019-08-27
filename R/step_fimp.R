@@ -56,8 +56,8 @@ step_fimp <- function(
   )
 }
 
-# Wrapper around 'step' function that sets the class of new step objects
-#' @importFrom recipes step
+# wrapper around 'step' function that sets the class of new step objects
+#' @export
 step_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores, skip,
                          id) {
   step(
@@ -75,42 +75,28 @@ step_fimp_new <- function(terms, role, trained, target, model, threshold, to_ret
   )
 }
 
-#' Define the estimation procedure
-#'
-#' @param x the step object
-#'
-#' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data.
-#' This is updated each time as each step function is evaluated by its prep method
-#' @param ... Currently unused
-#'
+
 #' @export
+#' @importFrom tibble tibble
+#' @importFrom dplyr arrange desc
 #' @importFrom stats quantile
-#' @importFrom rlang sym eval_tidy
 prep.step_fimp <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
   target_name <- x$target
 
-  # check that ranger model has been supplied
-  if (x$model$engine != "ranger")
-    stop("only a ranger model specification can be supplied to the `model` parameter")
-
-  if (! "importance" %in% names(x$model$eng_args))
-    stop("importance needs to be set in the ranger engine arguments")
-
-  if (! eval_tidy(x$model$eng_args$importance) %in% c("impurity", "impurity_corrected", 'permutation'))
-    stop("importance needs to be set to a valid ranger feature importances method")
-
   # fit initial model and get feature importances
   f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
   initial_model <- x$model %>% fit(f, training)
 
+  feature_ranking <- initial_model$fit$variable.importance
+
   feature_ranking <- tibble(
-    feature = names(initial_model$fit$variable.importance),
-    score = as.numeric(initial_model$fit$variable.importance)) %>%
-    arrange(desc(!! sym("score")))
+    feature = names(feature_ranking),
+    score = feature_ranking)
+
+  feature_ranking <- feature_ranking %>% arrange(desc(score))
 
   # select k best features
   score_to_exceed <- quantile(feature_ranking$score, c(x$threshold))
@@ -133,13 +119,10 @@ prep.step_fimp <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' bake method to apply the method from prep to new_data
-#'
-#' @param object is the updated step function that has been through the corresponding prep code
-#'
-#' @param new_data is a tibble of data to be processed
-#' @param ... currently unused
-#'
+# prep method does not apply the method, it only calculates any required data
+# the bake method is defined to do this
+# object is the updated step function that has been through the corresponding prep code
+# new_data is a tibble of data to be processed
 #' @export
 #' @importFrom tibble as_tibble
 bake.step_fimp <- function(object, new_data, ...) {
