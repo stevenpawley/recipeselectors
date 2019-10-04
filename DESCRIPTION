@@ -5,7 +5,7 @@ Version: 0.0.1
 Author: Steven Pawley
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
 Description: Provides addition steps for feature selection to be used with the `recipes` package.
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -16,8 +16,10 @@ Imports:
     formula.tools,
     dplyr,
     parsnip,
-    rlang,
-    magrittr
+    rlang (>= 0.1.2),
+    magrittr,
+    ranger
 RoxygenNote: 6.1.1
 Suggests: 
-    testthat
+    testthat,
+    roxygen2

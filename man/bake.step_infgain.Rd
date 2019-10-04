@@ -2,7 +2,8 @@
 % Please edit documentation in R/step_infgain.R
 \name{bake.step_infgain}
 \alias{bake.step_infgain}
-\title{bake method to apply the method from prep to new_data}
+\title{prep method does not apply the method, it only calculates any required data.
+The bake method is defined to do this.}
 \usage{
 bake.step_infgain(object, new_data, ...)
 }
@@ -14,5 +15,6 @@ bake.step_infgain(object, new_data, ...)
 \item{...}{currently unused}
 }
 \description{
-bake method to apply the method from prep to new_data
+prep method does not apply the method, it only calculates any required data.
+The bake method is defined to do this.
 }

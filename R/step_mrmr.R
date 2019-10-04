@@ -53,6 +53,7 @@ step_mrmr <- function(
   )
 }
 
+
 # Wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
 step_mrmr_new <- function(terms, role, trained, target, num_comp, threads, to_retain, skip, id) {
@@ -70,6 +71,7 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threads, to_re
     )
   }
 
+
 #' Define the estimation procedure
 #'
 #' @param x the step object
@@ -79,9 +81,10 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threads, to_re
 #'   time as each step function is evaluated by its prep method
 #' @param ... Currently unused
 #'
-#' @export
 #' @importFrom praznik MRMR
 #' @importFrom recipes terms_select
+#'
+#' @export
 prep.step_mrmr <- function(x, training, info = NULL, ...) {
 
   # First translate the terms argument into column name
@@ -120,15 +123,17 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' bake method to apply the method from prep to new_data
+
+#' prep method does not apply the method, it only calculates any required data.
+#' The bake method is defined to do this.
 #'
 #' @param object is the updated step function that has been through the corresponding prep code
-#'
 #' @param new_data is a tibble of data to be processed
 #' @param ... currently unused
 #'
-#' @export
 #' @importFrom tibble as_tibble
+#'
+#' @export
 bake.step_mrmr <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]

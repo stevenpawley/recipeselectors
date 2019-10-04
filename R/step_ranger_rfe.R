@@ -64,10 +64,11 @@ step_ranger_rfe <- function(
   )
 }
 
-# Wrapper around 'step' function that sets the class of new step objects
+
+# wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores, skip,
-                         id) {
+step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores,
+                                skip, id) {
   step(
     subclass = "rfe",
     terms = terms,
@@ -84,21 +85,23 @@ step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, 
   )
 }
 
+
 #' Define the estimation procedure
 #'
 #' @param x the step object
 #'
 #' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data.
-#' This is updated each time as each step function is evaluated by its prep method
+#' @param info a tibble that contains information on the current set of data. This is updated each
+#'   time as each step function is evaluated by its prep method
 #' @param ... Currently unused
 #'
-#' @export
 #' @importFrom formula.tools rhs.vars
 #' @importFrom tibble tibble
 #' @importFrom parsnip set_args fit
 #' @importFrom dplyr arrange desc
 #' @importFrom rlang sym
+#'
+#' @export
 prep.step_ranger_rfe <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
@@ -169,15 +172,17 @@ prep.step_ranger_rfe <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' bake method to apply the method from prep to new_data
+
+#' prep method does not apply the method, it only calculates any required data.
+#' The bake method is defined to do this.
 #'
 #' @param object is the updated step function that has been through the corresponding prep code
-#'
 #' @param new_data is a tibble of data to be processed
 #' @param ... currently unused
 #'
-#' @export
 #' @importFrom tibble as_tibble
+#'
+#' @export
 bake.step_ranger_rfe <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]

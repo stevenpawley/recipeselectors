@@ -12,37 +12,37 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have been
 #'   estimated
-#' @param model parsnip rand_forest model specification using the `ranger` engine
+#' @param model parsnip `rand_forest` model specification using the `ranger` engine
 #' @param threshold numeric, percentile of top scoring features to retain
 #' @param to_retain character, names of features to retain
 #' @param scores tibble, tibble of feature importance scores
-#' @param skip A logical. Should the step be skipped when the recipe is baked by
-#'   bake.recipe()? While all operations are baked when prep.recipe() is run, some
-#'   operations may not be able to be conducted on new data (e.g. processing the outcome
-#'   variable(s)). Care should be taken when using skip = TRUE as it may affect the
-#'   computations for subsequent operations
+#' @param skip A logical. Should the step be skipped when the recipe is baked by bake.recipe()?
+#'   While all operations are baked when prep.recipe() is run, some operations may not be able to be
+#'   conducted on new data (e.g. processing the outcome variable(s)). Care should be taken when
+#'   using skip = TRUE as it may affect the computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
 #' @return a step_ranger_fimp object
+#' @importFrom recipes recipes_pkg_check add_step
 #' @export
 step_ranger_fimp <- function(
   recipe, ...,
   target = NULL,
-  role = NA,
+  role = "predictor",
   trained = FALSE,
   model = NULL,
-  threshold = NULL,
+  threshold = 0.9,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("fimp")) {
+  id = rand_id("ranger_fimp")) {
 
-  terms <- ellipse_check(...)
+  recipes_pkg_check("ranger")
 
   add_step(
     recipe,
     step_ranger_fimp_new(
-      terms = terms,
+      terms = ellipse_check(...),
       trained = trained,
       target = target,
       role = role,
@@ -56,12 +56,13 @@ step_ranger_fimp <- function(
   )
 }
 
+
 # wrapper around 'step' function that sets the class of new step objects
-#' @export
-step_ranger_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores, skip,
-                         id) {
+#' @importFrom recipes step
+step_ranger_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores,
+                                 skip, id) {
   step(
-    subclass = "fimp",
+    subclass = "ranger_fimp",
     terms = terms,
     role = role,
     trained = trained,
@@ -76,15 +77,35 @@ step_ranger_fimp_new <- function(terms, role, trained, target, model, threshold,
 }
 
 
-#' @export
+#' Define the estimation procedure
+#'
+#' @param x the step object
+#'
+#' @param training a tibble that has the training set data
+#' @param info a tibble that contains information on the current set of data. This is updated each
+#'   time as each step function is evaluated by its prep method
+#' @param ... Currently unused
+#'
 #' @importFrom tibble tibble
 #' @importFrom dplyr arrange desc
 #' @importFrom stats quantile
+#' @importFrom recipes terms_select check_type
+#' @importFrom rlang eval_tidy
+#'
+#' @export
 prep.step_ranger_fimp <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
+  check_type(training[, col_names])
   target_name <- x$target
+
+  # check model is valid
+  if (x$model$engine != "ranger")
+    stop("rand_forest model must be using the `ranger` engine")
+
+  if (eval_tidy(x$model$eng_args$importance) == "none")
+    stop("engine arguments `importance` must be set to one of `impurity`, `impurity_corrected`, `permutation`")
 
   # fit initial model and get feature importances
   f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
@@ -96,7 +117,7 @@ prep.step_ranger_fimp <- function(x, training, info = NULL, ...) {
     feature = names(feature_ranking),
     score = feature_ranking)
 
-  feature_ranking <- feature_ranking %>% arrange(desc(score))
+  feature_ranking <- feature_ranking %>% arrange(desc(!!sym("score")))
 
   # select k best features
   score_to_exceed <- quantile(feature_ranking$score, c(x$threshold))
@@ -119,16 +140,49 @@ prep.step_ranger_fimp <- function(x, training, info = NULL, ...) {
   )
 }
 
-# prep method does not apply the method, it only calculates any required data
-# the bake method is defined to do this
-# object is the updated step function that has been through the corresponding prep code
-# new_data is a tibble of data to be processed
-#' @export
+#' prep method does not apply the method, it only calculates any required data.
+#' The bake method is defined to do this.
+#'
+#' @param object is the updated step function that has been through the corresponding prep code
+#' @param new_data is a tibble of data to be processed
+#' @param ... currently unused
+#'
 #' @importFrom tibble as_tibble
+#'
+#' @export
 bake.step_ranger_fimp <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 
   ## Always convert to tibbles on the way out
   as_tibble(new_data)
+}
+
+
+print.step_ranger_fimp <- function(x, width = max(20, options()$width - 40), ...) {
+  if (x$trained) {
+    if (x$num_comp == 0) {
+      cat("No features were extracted.\n")
+    } else {
+      cat("Ranger feature importance (", x$model$fit$importance.mode, ") extraction with ", sep = "")
+      cat(format_ch_vec(colnames(x$model$fit$variable.importance), width = width))
+    }
+  }
+  if (x$trained) cat(" [trained]\n") else cat("\n")
+  invisible(x)
+}
+
+
+#' @rdname tunable.step
+#' @export
+tunable.step_ranger_fimp <- function(x, ...) {
+  tibble::tibble(
+    name = c("threshold"),
+    call_info = list(
+      list(pkg = "dials", fun = "threshold", range(c(0, 1)))
+    ),
+    source = "recipesSelection",
+    component = "step_ranger_fimp",
+    component_id = x$id
+  )
 }

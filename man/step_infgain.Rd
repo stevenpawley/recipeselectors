@@ -5,41 +5,37 @@
 \title{Information gain feature selection step}
 \usage{
 step_infgain(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  k = NULL, type = "infogain", threads = 1, to_retain = NULL,
-  skip = FALSE, id = rand_id("infgain"))
+  num_comp = NULL, type = "infogain", threads = 1,
+  to_retain = NULL, skip = FALSE, id = rand_id("infgain"))
 }
 \arguments{
-\item{recipe}{A recipe object. The step will be added to the sequence of operations
-for this recipe}
+\item{recipe}{A recipe object. The step will be added to the sequence of operations for this
+recipe}
 
-\item{...}{One or more selector functions to choose which variables are affected by the
-step. See selections() for more details. For the tidy method, these are not currently
-used}
+\item{...}{One or more selector functions to choose which variables are affected by the step. See
+selections() for more details. For the tidy method, these are not currently used}
 
-\item{target}{character, name of response variable to use to evaluate information gain
-value against the predictors}
+\item{target}{character, name of response variable to use to evaluate information gain value
+against the predictors}
 
 \item{role}{Not used by this step since no new variables are created}
 
-\item{trained}{A logical to indicate if the quantities for preprocessing have been
-estimated}
+\item{trained}{A logical to indicate if the quantities for preprocessing have been estimated}
 
-\item{k}{numeric, if an integer value is supplied, then this represents the number of best
-scoring features to select, if a decimal between 0 and 1 is supplied then then top percentile
-of features are selected}
+\item{num_comp}{numeric, if an integer value is supplied, then this represents the number of best
+scoring features to select}
 
 \item{type}{character, one of c("infogain", "gainratio", "symuncert")}
 
-\item{threads}{integer, number of threads to use for processing, default = 0 uses all
-available threads}
+\item{threads}{integer, number of threads to use for processing, default = 0 uses all available
+threads}
 
 \item{to_retain}{character, names of features to retain}
 
-\item{skip}{A logical. Should the step be skipped when the recipe is baked by
-bake.recipe()? While all operations are baked when prep.recipe() is run, some
-operations may not be able to be conducted on new data (e.g. processing the outcome
-variable(s)). Care should be taken when using skip = TRUE as it may affect the
-computations for subsequent operations}
+\item{skip}{A logical. Should the step be skipped when the recipe is baked by bake.recipe()?
+While all operations are baked when prep.recipe() is run, some operations may not be able to be
+conducted on new data (e.g. processing the outcome variable(s)). Care should be taken when
+using skip = TRUE as it may affect the computations for subsequent operations}
 
 \item{id}{A character string that is unique to this step to identify it}
 }
