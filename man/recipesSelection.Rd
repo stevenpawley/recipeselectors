@@ -24,7 +24,7 @@ fimp_model <- rand_forest(mode = "classification", trees = 100) \%>\%
 
 rec <- iris \%>\%
  recipe(Species ~ .) \%>\%
- step_ranger_fimp(all_predictors(), threshold = 0.5, target = "Species",
+ step_ranger_fimp(all_predictors(), threshold = 0.5, target = Species,
                   model = fimp_model, id = "importance_filter")
 
 prepped <- prep(rec)

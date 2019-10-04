@@ -44,7 +44,7 @@ step_ranger_fimp <- function(
     step_ranger_fimp_new(
       terms = ellipse_check(...),
       trained = trained,
-      target = target,
+      target = enquos(target),
       role = role,
       model = model,
       threshold = threshold,
@@ -90,22 +90,33 @@ step_ranger_fimp_new <- function(terms, role, trained, target, model, threshold,
 #' @importFrom dplyr arrange desc
 #' @importFrom stats quantile
 #' @importFrom recipes terms_select check_type
-#' @importFrom rlang eval_tidy
+#' @importFrom rlang eval_tidy enquos
 #'
 #' @export
 prep.step_ranger_fimp <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
+  target_name <- terms_select(x$target, info = info)
+
   check_type(training[, col_names])
-  target_name <- x$target
 
   # check model is valid
+  if (is.null(x$model$engine))
+    stop("model engine must be set for permutation model")
+
   if (x$model$engine != "ranger")
     stop("rand_forest model must be using the `ranger` engine")
 
-  if (eval_tidy(x$model$eng_args$importance) == "none")
-    stop("engine arguments `importance` must be set to one of `impurity`, `impurity_corrected`, `permutation`")
+  importance_mode <- eval_tidy(x$model$eng_args$importance)
+
+  if (is.null(importance_mode))
+    stop("ranger engine arguments need to have `importance` set to one of
+         `impurity`, `impurity_corrected`, `permutation`")
+
+  if (importance_mode == "none")
+    stop("engine arguments `importance` must be set to one of `impurity`,
+         `impurity_corrected`, `permutation`")
 
   # fit initial model and get feature importances
   f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
@@ -158,7 +169,7 @@ bake.step_ranger_fimp <- function(object, new_data, ...) {
   as_tibble(new_data)
 }
 
-
+#' @importFrom recipes format_ch_vec
 print.step_ranger_fimp <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
     if (x$num_comp == 0) {
@@ -173,7 +184,12 @@ print.step_ranger_fimp <- function(x, width = max(20, options()$width - 40), ...
 }
 
 
-#' @rdname tunable.step
+#' Specify tunable arguments of step
+#'
+#' @param x step
+#' @param ... currently unused
+#'
+#' @return tibble
 #' @export
 tunable.step_ranger_fimp <- function(x, ...) {
   tibble::tibble(
