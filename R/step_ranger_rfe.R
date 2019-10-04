@@ -29,9 +29,9 @@
 #'   computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
-#' @return a step_rfe object
+#' @return a step_ranger_rfe object
 #' @export
-step_rfe <- function(
+step_ranger_rfe <- function(
   recipe, ...,
   target = NULL,
   role = NA,
@@ -48,7 +48,7 @@ step_rfe <- function(
 
   add_step(
     recipe,
-    step_rfe_new(
+    step_ranger_rfe_new(
       terms = terms,
       trained = trained,
       target = target,
@@ -66,7 +66,7 @@ step_rfe <- function(
 
 # Wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores, skip,
+step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores, skip,
                          id) {
   step(
     subclass = "rfe",
@@ -99,7 +99,7 @@ step_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_reta
 #' @importFrom parsnip set_args fit
 #' @importFrom dplyr arrange desc
 #' @importFrom rlang sym
-prep.step_rfe <- function(x, training, info = NULL, ...) {
+prep.step_ranger_rfe <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
@@ -154,7 +154,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_rfe_new(
+  step_ranger_rfe_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
@@ -178,7 +178,7 @@ prep.step_rfe <- function(x, training, info = NULL, ...) {
 #'
 #' @export
 #' @importFrom tibble as_tibble
-bake.step_rfe <- function(object, new_data, ...) {
+bake.step_ranger_rfe <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 

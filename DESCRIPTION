@@ -1,4 +1,4 @@
-Package: extrarecipes
+Package: recipesSelection
 Type: Package
 Title: Feature selection steps to be used in conjunction with the `recipes` package
 Version: 0.0.1

@@ -23,9 +23,9 @@
 #'   computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
-#' @return a step_fimp object
+#' @return a step_ranger_fimp object
 #' @export
-step_fimp <- function(
+step_ranger_fimp <- function(
   recipe, ...,
   target = NULL,
   role = NA,
@@ -41,7 +41,7 @@ step_fimp <- function(
 
   add_step(
     recipe,
-    step_fimp_new(
+    step_ranger_fimp_new(
       terms = terms,
       trained = trained,
       target = target,
@@ -58,7 +58,7 @@ step_fimp <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @export
-step_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores, skip,
+step_ranger_fimp_new <- function(terms, role, trained, target, model, threshold, to_retain, scores, skip,
                          id) {
   step(
     subclass = "fimp",
@@ -80,7 +80,7 @@ step_fimp_new <- function(terms, role, trained, target, model, threshold, to_ret
 #' @importFrom tibble tibble
 #' @importFrom dplyr arrange desc
 #' @importFrom stats quantile
-prep.step_fimp <- function(x, training, info = NULL, ...) {
+prep.step_ranger_fimp <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
@@ -105,7 +105,7 @@ prep.step_fimp <- function(x, training, info = NULL, ...) {
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_fimp_new(
+  step_ranger_fimp_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
@@ -125,7 +125,7 @@ prep.step_fimp <- function(x, training, info = NULL, ...) {
 # new_data is a tibble of data to be processed
 #' @export
 #' @importFrom tibble as_tibble
-bake.step_fimp <- function(object, new_data, ...) {
+bake.step_ranger_fimp <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 
