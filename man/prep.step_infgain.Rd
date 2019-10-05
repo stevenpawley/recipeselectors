@@ -11,8 +11,9 @@ prep.step_infgain(x, training, info = NULL, ...)
 
 \item{training}{a tibble that has the training set data}
 
-\item{info}{a tibble that contains information on the current set of data. This is updated each
-time as each step function is evaluated by its prep method}
+\item{info}{a tibble that contains information on the current set of data.
+This is updated each time as each step function is evaluated by its prep
+method}
 
 \item{...}{Currently unused}
 }

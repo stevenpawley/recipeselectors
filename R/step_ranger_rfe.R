@@ -3,30 +3,33 @@
 #' Feature selection step using random forests recursive feature
 #' elimination.
 #'
-#' @param recipe A recipe object. The step will be added to the sequence of operations
-#'  for this recipe
-#' @param ... One or more selector functions to choose which variables are affected by the
-#'   step. See selections() for more details. For the tidy method, these are not currently
-#'   used
-#' @param target character, name of response variable to use to evaluate information gain
-#' value against the predictors
+#' @param recipe A recipe object. The step will be added to the sequence of
+#'   operations for this recipe
+#' @param ... One or more selector functions to choose which variables are
+#'   affected by the step. See selections() for more details. For the tidy
+#'   method, these are not currently used
+#' @param target character, name of response variable to use to evaluate
+#'   information gain value against the predictors
 #' @param role Not used by this step since no new variables are created
-#' @param trained A logical to indicate if the quantities for preprocessing have been
-#'   estimated
-#' @param model parsnip rand_forest model specification using the `ranger` engine
-#' @param incr integer, increment step size to use in recursive feature elimination, default is 1
-#' @param tol numeric, tolerance to use when selecting the best subset of features that results in
-#' the lowest error score (r2 for regression models, fraction of missclassified for classification
-#' models). A tol value of 0 will result in the optimal subset of features being selected based on
-#' those that produce the lowest out-of-bag error score. A tol value > 0 will select the smallest
-#' group of features that are within tol of the lowest score.
+#' @param trained A logical to indicate if the quantities for preprocessing have
+#'   been estimated
+#' @param model parsnip rand_forest model specification using the `ranger`
+#'   engine
+#' @param incr integer, increment step size to use in recursive feature
+#'   elimination, default is 1
+#' @param tol numeric, tolerance to use when selecting the best subset of
+#'   features that results in the lowest error score (r2 for regression models,
+#'   fraction of missclassified for classification models). A tol value of 0
+#'   will result in the optimal subset of features being selected based on those
+#'   that produce the lowest out-of-bag error score. A tol value > 0 will select
+#'   the smallest group of features that are within tol of the lowest score.
 #' @param to_retain character, names of features to retain
 #' @param scores tibble, tibble of scores per remaining features
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
-#'   bake.recipe()? While all operations are baked when prep.recipe() is run, some
-#'   operations may not be able to be conducted on new data (e.g. processing the outcome
-#'   variable(s)). Care should be taken when using skip = TRUE as it may affect the
-#'   computations for subsequent operations
+#'   bake.recipe()? While all operations are baked when prep.recipe() is run,
+#'   some operations may not be able to be conducted on new data (e.g.
+#'   processing the outcome variable(s)). Care should be taken when using skip =
+#'   TRUE as it may affect the computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
 #' @return a step_ranger_rfe object
@@ -67,8 +70,8 @@ step_ranger_rfe <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, to_retain, scores,
-                                skip, id) {
+step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol,
+                                to_retain, scores, skip, id) {
   step(
     subclass = "rfe",
     terms = terms,
@@ -91,8 +94,9 @@ step_ranger_rfe_new <- function(terms, role, trained, target, model, incr, tol, 
 #' @param x the step object
 #'
 #' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data. This is updated each
-#'   time as each step function is evaluated by its prep method
+#' @param info a tibble that contains information on the current set of data.
+#'   This is updated each time as each step function is evaluated by its prep
+#'   method
 #' @param ... Currently unused
 #'
 #' @importFrom formula.tools rhs.vars
@@ -130,7 +134,8 @@ prep.step_ranger_rfe <- function(x, training, info = NULL, ...) {
 
     selected_feature_names <- feature_ranking[1:n, ][["predictor"]]
     selected_feature_names <- paste0(selected_feature_names, collapse = "+")
-    f_selected <- as.formula(paste0(paste0(target_name, " ~ "), selected_feature_names))
+    f_selected <- as.formula(
+      paste0(paste0(target_name, " ~ "), selected_feature_names))
 
     n_var <- length(rhs.vars(f_selected))
 
@@ -176,7 +181,8 @@ prep.step_ranger_rfe <- function(x, training, info = NULL, ...) {
 #' prep method does not apply the method, it only calculates any required data.
 #' The bake method is defined to do this.
 #'
-#' @param object is the updated step function that has been through the corresponding prep code
+#' @param object is the updated step function that has been through the
+#'   corresponding prep code
 #' @param new_data is a tibble of data to be processed
 #' @param ... currently unused
 #'

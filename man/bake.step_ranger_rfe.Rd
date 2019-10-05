@@ -8,7 +8,8 @@ The bake method is defined to do this.}
 bake.step_ranger_rfe(object, new_data, ...)
 }
 \arguments{
-\item{object}{is the updated step function that has been through the corresponding prep code}
+\item{object}{is the updated step function that has been through the
+corresponding prep code}
 
 \item{new_data}{is a tibble of data to be processed}
 

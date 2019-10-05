@@ -1,23 +1,26 @@
 #' Information gain feature selection step
 #'
-#' @param recipe 	A recipe object. The step will be added to the sequence of operations for this
-#'   recipe
-#' @param ... One or more selector functions to choose which variables are affected by the step. See
-#'   selections() for more details. For the tidy method, these are not currently used
+#' @param recipe 	A recipe object. The step will be added to the sequence of
+#'   operations for this recipe
+#' @param ... One or more selector functions to choose which variables are
+#'   affected by the step. See selections() for more details. For the tidy
+#'   method, these are not currently used
 #' @param role Not used by this step since no new variables are created
-#' @param trained A logical to indicate if the quantities for preprocessing have been estimated
+#' @param trained A logical to indicate if the quantities for preprocessing have
+#'   been estimated
 #' @param type character, one of c("infogain", "gainratio", "symuncert")
-#' @param target character, name of response variable to use to evaluate information gain value
-#'   against the predictors
-#' @param num_comp numeric, if an integer value is supplied, then this represents the number of best
-#'   scoring features to select
-#' @param threads integer, number of threads to use for processing, default = 0 uses all available
-#'   threads
+#' @param target character, name of response variable to use to evaluate
+#'   information gain value against the predictors
+#' @param num_comp numeric, if an integer value is supplied, then this
+#'   represents the number of best scoring features to select
+#' @param threads integer, number of threads to use for processing, default = 0
+#'   uses all available threads
 #' @param to_retain character, names of features to retain
-#' @param skip A logical. Should the step be skipped when the recipe is baked by bake.recipe()?
-#'   While all operations are baked when prep.recipe() is run, some operations may not be able to be
-#'   conducted on new data (e.g. processing the outcome variable(s)). Care should be taken when
-#'   using skip = TRUE as it may affect the computations for subsequent operations
+#' @param skip A logical. Should the step be skipped when the recipe is baked by
+#'   bake.recipe()? While all operations are baked when prep.recipe() is run,
+#'   some operations may not be able to be conducted on new data (e.g.
+#'   processing the outcome variable(s)). Care should be taken when using skip =
+#'   TRUE as it may affect the computations for subsequent operations
 #' @param id 	A character string that is unique to this step to identify it
 #'
 #' @return a step_infgain object
@@ -57,8 +60,8 @@ step_infgain <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_infgain_new <- function(terms, role, trained, target, num_comp, type, threads, to_retain, skip,
-                             id) {
+step_infgain_new <- function(terms, role, trained, target, num_comp, type,
+                             threads, to_retain, skip, id) {
   step(
     subclass = "infgain",
     terms = terms,
@@ -80,8 +83,9 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, type, threa
 #' @param x the step object
 #'
 #' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data. This is updated each
-#'   time as each step function is evaluated by its prep method
+#' @param info a tibble that contains information on the current set of data.
+#'   This is updated each time as each step function is evaluated by its prep
+#'   method
 #' @param ... Currently unused
 #'
 #' @importFrom FSelectorRcpp information_gain
@@ -132,7 +136,8 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
 #' prep method does not apply the method, it only calculates any required data.
 #' The bake method is defined to do this.
 #'
-#' @param object is the updated step function that has been through the corresponding prep code
+#' @param object is the updated step function that has been through the
+#'   corresponding prep code
 #' @param new_data is a tibble of data to be processed
 #' @param ... currently unused
 #'

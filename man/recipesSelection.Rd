@@ -4,10 +4,11 @@
 \name{recipesSelection}
 \alias{recipesSelection}
 \alias{recipesSelection-package}
-\title{recipesSelection: A collection of steps for feature selection to use with the 'recipes' package}
+\title{recipesSelection: A collection of steps for feature selection to use with the
+'recipes' package}
 \description{
-\pkg{recipesSelection} provides a collection of additional step objects related to feature
-selection to be used with the 'recipes' package.
+\pkg{recipesSelection} provides a collection of additional step objects
+related to feature selection to be used with the 'recipes' package.
 }
 \examples{
 library(parsnip)
@@ -18,14 +19,10 @@ library(dplyr)
 data(iris)
 
 # create a preprocessing recipe
-
-fimp_model <- rand_forest(mode = "classification", trees = 100) \%>\%
-    set_engine("ranger", importance = "permutation")
-
 rec <- iris \%>\%
  recipe(Species ~ .) \%>\%
- step_ranger_fimp(all_predictors(), threshold = 0.5, target = Species,
-                  model = fimp_model, id = "importance_filter")
+ step_ranger_fs(all_predictors(), threshold = 0, target = Species,
+                id = "importance_filter")
 
 prepped <- prep(rec)
 

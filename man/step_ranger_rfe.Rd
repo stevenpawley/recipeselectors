@@ -10,40 +10,43 @@ step_ranger_rfe(recipe, ..., target = NULL, role = NA,
   id = rand_id("rfe"))
 }
 \arguments{
-\item{recipe}{A recipe object. The step will be added to the sequence of operations
-for this recipe}
+\item{recipe}{A recipe object. The step will be added to the sequence of
+operations for this recipe}
 
-\item{...}{One or more selector functions to choose which variables are affected by the
-step. See selections() for more details. For the tidy method, these are not currently
-used}
+\item{...}{One or more selector functions to choose which variables are
+affected by the step. See selections() for more details. For the tidy
+method, these are not currently used}
 
-\item{target}{character, name of response variable to use to evaluate information gain
-value against the predictors}
+\item{target}{character, name of response variable to use to evaluate
+information gain value against the predictors}
 
 \item{role}{Not used by this step since no new variables are created}
 
-\item{trained}{A logical to indicate if the quantities for preprocessing have been
-estimated}
+\item{trained}{A logical to indicate if the quantities for preprocessing have
+been estimated}
 
-\item{model}{parsnip rand_forest model specification using the `ranger` engine}
+\item{model}{parsnip rand_forest model specification using the `ranger`
+engine}
 
-\item{incr}{integer, increment step size to use in recursive feature elimination, default is 1}
+\item{incr}{integer, increment step size to use in recursive feature
+elimination, default is 1}
 
-\item{tol}{numeric, tolerance to use when selecting the best subset of features that results in
-the lowest error score (r2 for regression models, fraction of missclassified for classification
-models). A tol value of 0 will result in the optimal subset of features being selected based on
-those that produce the lowest out-of-bag error score. A tol value > 0 will select the smallest
-group of features that are within tol of the lowest score.}
+\item{tol}{numeric, tolerance to use when selecting the best subset of
+features that results in the lowest error score (r2 for regression models,
+fraction of missclassified for classification models). A tol value of 0
+will result in the optimal subset of features being selected based on those
+that produce the lowest out-of-bag error score. A tol value > 0 will select
+the smallest group of features that are within tol of the lowest score.}
 
 \item{to_retain}{character, names of features to retain}
 
 \item{scores}{tibble, tibble of scores per remaining features}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is baked by
-bake.recipe()? While all operations are baked when prep.recipe() is run, some
-operations may not be able to be conducted on new data (e.g. processing the outcome
-variable(s)). Care should be taken when using skip = TRUE as it may affect the
-computations for subsequent operations}
+bake.recipe()? While all operations are baked when prep.recipe() is run,
+some operations may not be able to be conducted on new data (e.g.
+processing the outcome variable(s)). Care should be taken when using skip =
+TRUE as it may affect the computations for subsequent operations}
 
 \item{id}{A character string that is unique to this step to identify it}
 }
