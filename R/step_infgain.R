@@ -8,14 +8,16 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
-#' @param type character, one of c("infogain", "gainratio", "symuncert")
-#' @param target character, name of response variable to use to evaluate
-#'   information gain value against the predictors
-#' @param num_comp numeric, if an integer value is supplied, then this
-#'   represents the number of best scoring features to select
+#' @param type character, one of c("infogain", "gainratio", "symuncert").
+#' Default is 'infogain'
+#' @param target name of response variable to use to evaluate information gain
+#'   value against the predictors
+#' @param num_comp numeric, the number of best scoring features to select
 #' @param threads integer, number of threads to use for processing, default = 0
 #'   uses all available threads
 #' @param to_retain character, names of features to retain
+#' @param scores tibble, information gain scores of variables. Only produced
+#' after the recipe has been trained
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
@@ -26,6 +28,7 @@
 #' @return a step_infgain object
 #' @export
 #' @importFrom recipes ellipse_check rand_id add_step
+#' @importFrom rlang enquos
 step_infgain <- function(
   recipe, ...,
   target = NULL,
@@ -35,6 +38,7 @@ step_infgain <- function(
   type = "infogain",
   threads = 1,
   to_retain = NULL,
+  scores = NULL,
   skip = FALSE,
   id = rand_id("infgain")) {
 
@@ -45,12 +49,13 @@ step_infgain <- function(
     step_infgain_new(
       terms = terms,
       trained = trained,
-      target = target,
+      target = enquos(target),
       role = role,
       num_comp = num_comp,
       type = type,
       threads = threads,
       to_retain = to_retain,
+      scores = scores,
       skip = skip,
       id = id
     )
@@ -61,7 +66,7 @@ step_infgain <- function(
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
 step_infgain_new <- function(terms, role, trained, target, num_comp, type,
-                             threads, to_retain, skip, id) {
+                             threads, to_retain, scores, skip, id) {
   step(
     subclass = "infgain",
     terms = terms,
@@ -72,6 +77,7 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, type,
     type = type,
     threads = threads,
     to_retain = to_retain,
+    scores = scores,
     skip = skip,
     id = id
   )
@@ -88,27 +94,26 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, type,
 #'   method
 #' @param ... Currently unused
 #'
-#' @importFrom FSelectorRcpp information_gain
 #' @importFrom recipes terms_select
 #' @importFrom stats as.formula
+#' @importFrom rlang eval_tidy
+#' @importFrom tibble as_tibble
 #'
 #' @export
 prep.step_infgain <- function(x, training, info = NULL, ...) {
 
   # First translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
-  target_name <- x$target
+  target_name <- terms_select(x$target, info = info)
 
-  f <- as.formula(paste(target_name, "~", paste(col_names, collapse = "+")))
+  # Perform IG
+  f <- as.formula(paste(target_name, "~", paste0(col_names, collapse = " + ")))
 
-  # Check for factors
-  col_types <- sapply(training[, col_names], class, USE.NAMES = FALSE)
-  if ("factor" %in% col_types) discIntegers = TRUE else discIntegers = FALSE
-
-  ig_scores <- information_gain(
+  ig_scores <- FSelectorRcpp::information_gain(
     formula = f, data = training, type = x$type, threads = x$threads,
-    discIntegers = discIntegers, equal = TRUE)
+    discIntegers = TRUE, equal = FALSE)
 
+  ig_scores <- as_tibble(ig_scores)
   ig_scores <- ig_scores[order(ig_scores$importance, decreasing = TRUE), ]
 
   # Select top scoring features
@@ -128,6 +133,7 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
     type = x$type,
     threads = x$threads,
     to_retain = to_retain,
+    scores = ig_scores,
     skip = x$skip,
     id = x$id
   )
@@ -150,4 +156,39 @@ bake.step_infgain <- function(object, new_data, ...) {
 
   # always convert to tibbles on the way out
   as_tibble(new_data)
+}
+
+
+#' @importFrom recipes format_ch_vec
+print.step_infgain <- function(x, width = max(20, options()$width - 40), ...) {
+  if (x$trained) {
+    if (x$num_comp == 0) {
+      cat("No features were extracted.\n")
+    } else {
+      cat("Information gain importance (", x$ig_scores, ")")
+      cat(format_ch_vec(colnames(x$ig_scores), width = width))
+    }
+  }
+  if (x$trained) cat(" [trained]\n") else cat("\n")
+  invisible(x)
+}
+
+
+#' Specify tunable arguments of step
+#'
+#' @param x step
+#' @param ... currently unused
+#'
+#' @return tibble
+#' @export
+tunable.step_infgain <- function(x, ...) {
+  tibble::tibble(
+    name = c("num_comp"),
+    call_info = list(
+      list(pkg = "dials", fun = "num_comp")
+    ),
+    source = "recipeselectors",
+    component = "step_infgain",
+    component_id = x$id
+  )
 }

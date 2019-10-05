@@ -5,8 +5,8 @@
 \title{mRMR feature selection step}
 \usage{
 step_mrmr(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  num_comp = NULL, threads = 0, to_retain = NULL, skip = FALSE,
-  id = rand_id("mrmr"))
+  num_comp = NULL, threads = 0, to_retain = NULL, scores = NULL,
+  skip = FALSE, id = rand_id("mrmr"))
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
@@ -16,22 +16,22 @@ operations for this recipe}
 affected by the step. See selections() for more details. For the tidy
 method, these are not currently used}
 
-\item{target}{character, name of response variable to evaluation MRMR against}
+\item{target}{name of response variable to evaluation MRMR against}
 
 \item{role}{Not used by this step since no new variables are created}
 
 \item{trained}{A logical to indicate if the quantities for preprocessing have
 been estimated}
 
-\item{num_comp}{numeric, if an integer value is supplied, then this
-represents the number of best scoring features to select, if a decimal
-between 0 and 1 is supplied then then top percentile of features are
-selected}
+\item{num_comp}{numeric, the number of best scoring features to select}
 
 \item{threads}{integer, number of threads to use for processing, default = 0
 uses all available threads}
 
 \item{to_retain}{character, names of features to retain}
+
+\item{scores}{tibble, information gain scores of variables. Only produced
+after the recipe has been trained}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is baked by
 bake.recipe()? While all operations are baked when prep.recipe() is run,

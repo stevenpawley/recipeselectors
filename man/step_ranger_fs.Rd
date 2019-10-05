@@ -6,9 +6,9 @@
 \usage{
 step_ranger_fs(recipe, ..., target = NULL, role = "predictor",
   trained = FALSE, trees = 100, importance = "permutation",
-  splitrule = "gini", min_n = NULL, threshold = 0.9,
+  splitrule = "gini", min_n = NULL, num_comp = NULL,
   to_retain = NULL, scores = NULL, skip = FALSE,
-  id = rand_id("ranger_fimp"))
+  id = rand_id("ranger_fs"))
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
@@ -18,8 +18,8 @@ operations for this recipe}
 affected by the step. See selections() for more details. For the tidy
 method, these are not currently used}
 
-\item{target}{character, name of response variable to use to evaluate
-information gain value against the predictors}
+\item{target}{name of response variable to use to evaluate information gain
+value against the predictors}
 
 \item{role}{Not used by this step since no new variables are created}
 
@@ -29,15 +29,15 @@ been estimated}
 \item{trees}{numeric, number of trees in the forest, default is 100}
 
 \item{importance}{character, one of `impurity`, `impurity_corrected`,
-`permutation`}
+`permutation`, default is `permutation`}
 
 \item{splitrule}{character, one of `gini`, `variance`, `extratrees`,
-`maxstat`, or `logrank`}
+`maxstat`}
 
 \item{min_n}{numeric, default is 1 for classification, 5 for regression, and
 10 for probability}
 
-\item{threshold}{numeric, percentile of top scoring features to retain}
+\item{num_comp}{numeric, the number of best scoring features to select}
 
 \item{to_retain}{character, names of features to retain}
 

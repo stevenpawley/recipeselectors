@@ -15,7 +15,7 @@
 #' # create a preprocessing recipe
 #' rec <- iris %>%
 #'  recipe(Species ~ .) %>%
-#'  step_ranger_fs(all_predictors(), threshold = 0, target = Species,
+#'  step_ranger_fs(all_predictors(), num_comp = 2, target = Species,
 #'                 id = "importance_filter")
 #'
 #' prepped <- prep(rec)

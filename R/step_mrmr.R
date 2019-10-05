@@ -10,14 +10,13 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
-#' @param target character, name of response variable to evaluation MRMR against
-#' @param num_comp numeric, if an integer value is supplied, then this
-#'   represents the number of best scoring features to select, if a decimal
-#'   between 0 and 1 is supplied then then top percentile of features are
-#'   selected
+#' @param target name of response variable to evaluation MRMR against
+#' @param num_comp numeric, the number of best scoring features to select
 #' @param threads integer, number of threads to use for processing, default = 0
 #'   uses all available threads
 #' @param to_retain character, names of features to retain
+#' @param scores tibble, information gain scores of variables. Only produced
+#' after the recipe has been trained
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
@@ -28,6 +27,7 @@
 #' @return a step_mrmr object
 #' @export
 #' @importFrom recipes ellipse_check rand_id add_step
+#' @importFrom rlang enquos
 step_mrmr <- function(
   recipe, ...,
   target = NULL,
@@ -36,6 +36,7 @@ step_mrmr <- function(
   num_comp = NULL,
   threads = 0,
   to_retain = NULL,
+  scores = NULL,
   skip = FALSE,
   id = rand_id("mrmr")) {
 
@@ -46,11 +47,12 @@ step_mrmr <- function(
     step_mrmr_new(
       terms = terms,
       trained = trained,
-      target = target,
+      target = enquos(target),
       role = role,
       num_comp = num_comp,
       threads = threads,
       to_retain = to_retain,
+      scores = scores,
       skip = skip,
       id = id
     )
@@ -61,7 +63,7 @@ step_mrmr <- function(
 # Wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
 step_mrmr_new <- function(terms, role, trained, target, num_comp, threads,
-                          to_retain, skip, id) {
+                          to_retain, scores, skip, id) {
     step(
       subclass = "mrmr", # set class of new objects to 'step_mrmr'
       terms = terms,
@@ -71,6 +73,7 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threads,
       num_comp = num_comp,
       threads = threads,
       to_retain = to_retain,
+      scores = scores,
       skip = skip,
       id = id
     )
@@ -95,24 +98,25 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
 
   # First translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
-  target_name <- x$target
+  target_name <- terms_select(x$target, info = info)
 
   # Perform mrmr using all features
   X <- training[, col_names]
   y <- training[[target_name]]
 
-  # Some checks
-  if (any(sapply(X, class)) == "factor")
-    stop("mrmr step method cannot be applied to factors")
-
   # Perform MRMR using all features
-  mi <- MRMR(X, y, length(col_names), x$threads)
+  res <- MRMR(X, y, length(col_names), x$threads)
+
+  mrmr_tbl <- tibble(
+    selection = res$selection,
+    score = res$score,
+    attribute = names(res$selection))
 
   # Select top scoring features
   if (is.null(x$num_comp))
     x$num_comp <- length(col_names)
 
-  to_retain  <- c(names(mi$selection)[1:x$num_comp], target_name)
+  to_retain <- c(mrmr_tbl[1:x$num_comp, ][["attribute"]], target_name)
 
   # Use the constructor function to return the updated object
   # Note that `trained` is set to TRUE
@@ -124,6 +128,7 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
     num_comp = x$num_comp,
     threads = x$threads,
     to_retain = to_retain,
+    scores = mrmr_tbl,
     skip = x$skip,
     id = x$id
   )
@@ -147,4 +152,38 @@ bake.step_mrmr <- function(object, new_data, ...) {
 
   ## Always convert to tibbles on the way out
   as_tibble(new_data)
+}
+
+#' @importFrom recipes format_ch_vec
+print.step_mrmr <- function(x, width = max(20, options()$width - 40), ...) {
+  if (x$trained) {
+    if (x$num_comp == 0) {
+      cat("No features were extracted.\n")
+    } else {
+      cat("Information gain importance")
+      cat(format_ch_vec(colnames(x$scores), width = width))
+    }
+  }
+  if (x$trained) cat(" [trained]\n") else cat("\n")
+  invisible(x)
+}
+
+
+#' Specify tunable arguments of step
+#'
+#' @param x step
+#' @param ... currently unused
+#'
+#' @return tibble
+#' @export
+tunable.step_mrmr <- function(x, ...) {
+  tibble::tibble(
+    name = c("num_comp"),
+    call_info = list(
+      list(pkg = "dials", fun = "num_comp")
+    ),
+    source = "recipeselectors",
+    component = "step_mrmr",
+    component_id = x$id
+  )
 }

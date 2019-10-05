@@ -1,12 +1,10 @@
 Package: recipeselectors
 Type: Package
-Title: Feature selection steps to be used in conjunction with the `recipes` 
-package
+Title: Feature selection steps to be used in conjunction with the `recipes` package
 Version: 0.0.1
 Author: Steven Pawley
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
-Description: Provides addition steps for feature selection to be used with the 
-`recipes` package.
+Description: Provides addition steps for feature selection to be used with the `recipes` package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

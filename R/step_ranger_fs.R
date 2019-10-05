@@ -7,19 +7,19 @@
 #' @param ... One or more selector functions to choose which variables are
 #'   affected by the step. See selections() for more details. For the tidy
 #'   method, these are not currently used
-#' @param target character, name of response variable to use to evaluate
-#'   information gain value against the predictors
+#' @param target name of response variable to use to evaluate information gain
+#'   value against the predictors
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
 #' @param trees numeric, number of trees in the forest, default is 100
 #' @param importance character, one of `impurity`, `impurity_corrected`,
-#'   `permutation`
+#'   `permutation`, default is `permutation`
 #' @param splitrule character, one of `gini`, `variance`, `extratrees`,
-#'   `maxstat`, or `logrank`
+#'   `maxstat`
 #' @param min_n numeric, default is 1 for classification, 5 for regression, and
 #'   10 for probability
-#' @param threshold numeric, percentile of top scoring features to retain
+#' @param num_comp numeric, the number of best scoring features to select
 #' @param to_retain character, names of features to retain
 #' @param scores tibble, tibble of feature importance scores
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
@@ -41,11 +41,11 @@ step_ranger_fs <- function(
   importance = "permutation",
   splitrule = "gini",
   min_n = NULL,
-  threshold = 0.9,
+  num_comp = NULL,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("ranger_fimp")) {
+  id = rand_id("ranger_fs")) {
 
   recipes_pkg_check("ranger")
 
@@ -60,7 +60,7 @@ step_ranger_fs <- function(
       importance = importance,
       splitrule = splitrule,
       min_n = min_n,
-      threshold = threshold,
+      num_comp = num_comp,
       to_retain = to_retain,
       scores = scores,
       skip = skip,
@@ -73,10 +73,10 @@ step_ranger_fs <- function(
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
 step_ranger_fs_new <- function(terms, role, trained, target, trees,
-                                 importance, splitrule, min_n, threshold,
-                                 to_retain, scores, skip, id) {
+                               importance, splitrule, min_n, num_comp,
+                               to_retain, scores, skip, id) {
   step(
-    subclass = "ranger_fimp",
+    subclass = "ranger_fs",
     terms = terms,
     role = role,
     trained = trained,
@@ -85,7 +85,7 @@ step_ranger_fs_new <- function(terms, role, trained, target, trees,
     importance = importance,
     splitrule = splitrule,
     min_n = min_n,
-    threshold = threshold,
+    num_comp = num_comp,
     to_retain = to_retain,
     scores = scores,
     skip = skip,
@@ -147,9 +147,10 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
   feature_ranking <- feature_ranking %>% arrange(desc(!!sym("score")))
 
   # select k best features
-  score_to_exceed <- quantile(feature_ranking$score, c(x$threshold))
-  best_n <- which(feature_ranking$score >= score_to_exceed)
-  to_retain <- c(feature_ranking[best_n, ][["feature"]], target_name)
+  if (is.null(x$num_comp))
+    x$num_comp <- length(col_names)
+
+  to_retain <- c(feature_ranking[1:x$num_comp, ][["feature"]], target_name)
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
@@ -162,7 +163,7 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
     importance = x$importance,
     splitrule = x$splitrule,
     min_n = x$min_n,
-    threshold = x$threshold,
+    num_comp = x$num_comp,
     to_retain = to_retain,
     scores = feature_ranking,
     skip = x$skip,
@@ -192,7 +193,7 @@ bake.step_ranger_fs <- function(object, new_data, ...) {
 #' @importFrom recipes format_ch_vec
 print.step_ranger_fs <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
-    if (x$num_comp == 0) {
+    if (x$num_comp == 1) {
       cat("No features were extracted.\n")
     } else {
       cat("Ranger feature importance (",
@@ -217,11 +218,11 @@ print.step_ranger_fs <- function(x, width = max(20, options()$width - 40), ...) 
 #' @export
 tunable.step_ranger_fs <- function(x, ...) {
   tibble::tibble(
-    name = c("threshold"),
+    name = c("num_comp"),
     call_info = list(
-      list(pkg = "dials", fun = "threshold", range(c(0, 1)))
+      list(pkg = "dials", fun = "num_comp")
     ),
-    source = "recipesSelection",
+    source = "recipeselectors",
     component = "step_ranger_fs",
     component_id = x$id
   )
