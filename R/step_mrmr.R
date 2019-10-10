@@ -182,7 +182,7 @@ tunable.step_mrmr <- function(x, ...) {
     call_info = list(
       list(pkg = "dials", fun = "num_comp")
     ),
-    source = "recipeselectors",
+    source = "recipe",
     component = "step_mrmr",
     component_id = x$id
   )

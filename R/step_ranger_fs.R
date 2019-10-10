@@ -222,7 +222,7 @@ tunable.step_ranger_fs <- function(x, ...) {
     call_info = list(
       list(pkg = "dials", fun = "num_comp")
     ),
-    source = "recipeselectors",
+    source = "recipe",
     component = "step_ranger_fs",
     component_id = x$id
   )
