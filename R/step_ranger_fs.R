@@ -118,8 +118,6 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(terms = x$terms, info = info)
   target_name <- terms_select(x$target, info = info)
 
-  check_type(training[, col_names])
-
   # fit initial model and get feature importances
   X <- training[, col_names]
   y <- training[[target_name]]
@@ -134,7 +132,8 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
     rand_forest(trees = x$trees, min_n = x$min_n) %>%
     set_mode(mode = mode) %>%
     set_engine("ranger", num.threads = x$num.threads, importance = x$importance,
-               splitrule = x$splitrule)
+               splitrule = x$splitrule, respect.unordered.factors = TRUE,
+               oob.error = TRUE)
 
   initial_model <- model %>% fit_xy(X, y)
 
