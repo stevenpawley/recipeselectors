@@ -20,6 +20,8 @@
 #' @param min_n numeric, default is 1 for classification, 5 for regression, and
 #'   10 for probability
 #' @param num_comp numeric, the number of best scoring features to select
+#' @param threshold numeric, percentile of best features to select. Note that
+#' this overrides num_comp
 #' @param to_retain character, names of features to retain
 #' @param scores tibble, tibble of feature importance scores
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
@@ -42,6 +44,7 @@ step_ranger_fs <- function(
   splitrule = "gini",
   min_n = NULL,
   num_comp = NULL,
+  threshold = NULL,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
@@ -61,6 +64,7 @@ step_ranger_fs <- function(
       splitrule = splitrule,
       min_n = min_n,
       num_comp = num_comp,
+      threshold = threshold,
       to_retain = to_retain,
       scores = scores,
       skip = skip,
@@ -74,7 +78,7 @@ step_ranger_fs <- function(
 #' @importFrom recipes step
 step_ranger_fs_new <- function(terms, role, trained, target, trees,
                                importance, splitrule, min_n, num_comp,
-                               to_retain, scores, skip, id) {
+                               threshold, to_retain, scores, skip, id) {
   step(
     subclass = "ranger_fs",
     terms = terms,
@@ -86,6 +90,7 @@ step_ranger_fs_new <- function(terms, role, trained, target, trees,
     splitrule = splitrule,
     min_n = min_n,
     num_comp = num_comp,
+    threshold = threshold,
     to_retain = to_retain,
     scores = scores,
     skip = skip,
@@ -146,7 +151,12 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
   feature_ranking <- feature_ranking %>% arrange(desc(!!sym("score")))
 
   # select k best features
-  if (is.null(x$num_comp))
+  if (!is.null(x$threshold)) {
+    score_to_exceed <- quantile(feature_ranking$score, c(x$threshold))
+    x$num_comp <- which(feature_ranking$score >= score_to_exceed)
+  }
+  
+  if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
 
   to_retain <- c(feature_ranking[1:x$num_comp, ][["feature"]], target_name)
@@ -163,6 +173,7 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
     splitrule = x$splitrule,
     min_n = x$min_n,
     num_comp = x$num_comp,
+    threshold = threshold,
     to_retain = to_retain,
     scores = feature_ranking,
     skip = x$skip,
@@ -217,9 +228,10 @@ print.step_ranger_fs <- function(x, width = max(20, options()$width - 40), ...) 
 #' @export
 tunable.step_ranger_fs <- function(x, ...) {
   tibble::tibble(
-    name = c("num_comp"),
+    name = c("num_comp", "threshold"),
     call_info = list(
-      list(pkg = "dials", fun = "num_comp")
+      list(pkg = "dials", fun = "num_comp"),
+      list(pkg = "dials", fun = "threshold")
     ),
     source = "recipe",
     component = "step_ranger_fs",
