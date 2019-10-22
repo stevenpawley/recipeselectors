@@ -49,9 +49,9 @@ step_ranger_fs <- function(
   scores = NULL,
   skip = FALSE,
   id = rand_id("ranger_fs")) {
-
+  
   recipes_pkg_check("ranger")
-
+  
   add_step(
     recipe,
     step_ranger_fs_new(
@@ -118,49 +118,49 @@ step_ranger_fs_new <- function(terms, role, trained, target, trees,
 #'
 #' @export
 prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
-
+  
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
   target_name <- terms_select(x$target, info = info)
-
+  
   # fit initial model and get feature importances
   X <- training[, col_names]
   y <- training[[target_name]]
-
+  
   if (inherits(y, "numeric")) {
     mode <- "regression"
   } else {
     mode <- "classification"
   }
-
+  
   model <-
     rand_forest(trees = x$trees, min_n = x$min_n) %>%
     set_mode(mode = mode) %>%
     set_engine("ranger", num.threads = x$num.threads, importance = x$importance,
                splitrule = x$splitrule, respect.unordered.factors = TRUE,
                oob.error = TRUE)
-
+  
   initial_model <- model %>% fit_xy(X, y)
-
+  
   feature_ranking <- initial_model$fit$variable.importance
-
+  
   feature_ranking <- tibble(
     feature = names(feature_ranking),
     score = feature_ranking)
-
+  
   feature_ranking <- feature_ranking %>% arrange(desc(!!sym("score")))
-
+  
   # select k best features
   if (!is.null(x$threshold)) {
     score_to_exceed <- quantile(feature_ranking$score, c(x$threshold))
-    x$num_comp <- which(feature_ranking$score >= score_to_exceed)
+    x$num_comp <- max(which(feature_ranking$score >= score_to_exceed))
   }
   
   if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
-
+  
   to_retain <- c(feature_ranking[1:x$num_comp, ][["feature"]], target_name)
-
+  
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
   step_ranger_fs_new(
@@ -193,9 +193,9 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
 #'
 #' @export
 bake.step_ranger_fs <- function(object, new_data, ...) {
-
+  
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
-
+  
   ## Always convert to tibbles on the way out
   as_tibble(new_data)
 }
