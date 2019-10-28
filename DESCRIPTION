@@ -17,7 +17,8 @@ Imports:
     parsnip,
     rlang (>= 0.1.2),
     magrittr,
-    ranger
+    ranger,
+    purrr
 RoxygenNote: 6.1.1
 Suggests: 
     testthat,

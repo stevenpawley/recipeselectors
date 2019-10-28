@@ -12,6 +12,8 @@
 #'   been estimated
 #' @param target name of response variable to evaluation MRMR against
 #' @param num_comp numeric, the number of best scoring features to select
+#' @param threshold numeric, percentile of best features to select. Note that
+#' this overrides num_comp
 #' @param threads integer, number of threads to use for processing, default = 0
 #'   uses all available threads
 #' @param to_retain character, names of features to retain
@@ -34,6 +36,7 @@ step_mrmr <- function(
   role = NA,
   trained = FALSE,
   num_comp = NULL,
+  threshold = NULL,
   threads = 0,
   to_retain = NULL,
   scores = NULL,
@@ -50,6 +53,7 @@ step_mrmr <- function(
       target = enquos(target),
       role = role,
       num_comp = num_comp,
+      threshold = threshold,
       threads = threads,
       to_retain = to_retain,
       scores = scores,
@@ -62,8 +66,8 @@ step_mrmr <- function(
 
 # Wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_mrmr_new <- function(terms, role, trained, target, num_comp, threads,
-                          to_retain, scores, skip, id) {
+step_mrmr_new <- function(terms, role, trained, target, num_comp, threshold,
+                          threads, to_retain, scores, skip, id) {
     step(
       subclass = "mrmr", # set class of new objects to 'step_mrmr'
       terms = terms,
@@ -71,6 +75,7 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threads,
       trained = trained,
       target = target,
       num_comp = num_comp,
+      threshold = threshold,
       threads = threads,
       to_retain = to_retain,
       scores = scores,
@@ -113,7 +118,12 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
     attribute = names(res$selection))
 
   # Select top scoring features
-  if (is.null(x$num_comp))
+  if (!is.null(x$threshold)) {
+    score_to_exceed <- quantile(mrmr_tbl$score, c(x$threshold))
+    x$num_comp <- max(which(mrmr_tbl$score >= score_to_exceed))
+  }
+
+  if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
 
   to_retain <- c(mrmr_tbl[1:x$num_comp, ][["attribute"]], target_name)
@@ -126,6 +136,7 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
     role = x$role,
     target = target_name,
     num_comp = x$num_comp,
+    threshold = x$threshold,
     threads = x$threads,
     to_retain = to_retain,
     scores = mrmr_tbl,
@@ -178,9 +189,10 @@ print.step_mrmr <- function(x, width = max(20, options()$width - 40), ...) {
 #' @export
 tunable.step_mrmr <- function(x, ...) {
   tibble::tibble(
-    name = c("num_comp"),
+    name = c("num_comp", "threshold"),
     call_info = list(
-      list(pkg = "dials", fun = "num_comp")
+      list(pkg = "dials", fun = "num_comp"),
+      list(pkg = "dials", fun = "threshold")
     ),
     source = "recipe",
     component = "step_mrmr",

@@ -13,6 +13,8 @@
 #' @param target name of response variable to use to evaluate information gain
 #'   value against the predictors
 #' @param num_comp numeric, the number of best scoring features to select
+#' @param threshold numeric, percentile of best features to select. Note that
+#' this overrides num_comp
 #' @param threads integer, number of threads to use for processing, default = 0
 #'   uses all available threads
 #' @param to_retain character, names of features to retain
@@ -35,6 +37,7 @@ step_infgain <- function(
   role = NA,
   trained = FALSE,
   num_comp = NULL,
+  threshold = NULL,
   type = "infogain",
   threads = 1,
   to_retain = NULL,
@@ -52,6 +55,7 @@ step_infgain <- function(
       target = enquos(target),
       role = role,
       num_comp = num_comp,
+      threshold = threshold,
       type = type,
       threads = threads,
       to_retain = to_retain,
@@ -65,8 +69,8 @@ step_infgain <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_infgain_new <- function(terms, role, trained, target, num_comp, type,
-                             threads, to_retain, scores, skip, id) {
+step_infgain_new <- function(terms, role, trained, target, num_comp, threshold,
+                             type, threads, to_retain, scores, skip, id) {
   step(
     subclass = "infgain",
     terms = terms,
@@ -74,6 +78,7 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, type,
     trained = trained,
     target = target,
     num_comp = num_comp,
+    threshold = threshold,
     type = type,
     threads = threads,
     to_retain = to_retain,
@@ -117,7 +122,12 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
   ig_scores <- ig_scores[order(ig_scores$importance, decreasing = TRUE), ]
 
   # Select top scoring features
-  if (is.null(x$num_comp))
+  if (!is.null(x$threshold)) {
+    score_to_exceed <- quantile(ig_scores$importance, c(x$threshold))
+    x$num_comp <- max(which(ig_scores$importance >= score_to_exceed))
+  }
+
+  if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
 
   to_retain  <- c(ig_scores[1:x$num_comp, "attributes"], target_name)
@@ -130,6 +140,7 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
     role = x$role,
     target = target_name,
     num_comp = x$num_comp,
+    threshold = x$threshold,
     type = x$type,
     threads = x$threads,
     to_retain = to_retain,
@@ -183,9 +194,10 @@ print.step_infgain <- function(x, width = max(20, options()$width - 40), ...) {
 #' @export
 tunable.step_infgain <- function(x, ...) {
   tibble::tibble(
-    name = c("num_comp"),
+    name = c("num_comp", "threshold"),
     call_info = list(
-      list(pkg = "dials", fun = "num_comp")
+      list(pkg = "dials", fun = "num_comp"),
+      list(pkg = "dials", fun = "threshold")
     ),
     source = "recipe",
     component = "step_infgain",

@@ -5,8 +5,8 @@
 \title{Information gain feature selection step}
 \usage{
 step_infgain(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  num_comp = NULL, type = "infogain", threads = 1,
-  to_retain = NULL, scores = NULL, skip = FALSE,
+  num_comp = NULL, threshold = NULL, type = "infogain",
+  threads = 1, to_retain = NULL, scores = NULL, skip = FALSE,
   id = rand_id("infgain"))
 }
 \arguments{
@@ -26,6 +26,9 @@ value against the predictors}
 been estimated}
 
 \item{num_comp}{numeric, the number of best scoring features to select}
+
+\item{threshold}{numeric, percentile of best features to select. Note that
+this overrides num_comp}
 
 \item{type}{character, one of c("infogain", "gainratio", "symuncert").
 Default is 'infogain'}

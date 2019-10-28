@@ -7,7 +7,7 @@
 step_ranger_fs(recipe, ..., target = NULL, role = "predictor",
   trained = FALSE, trees = 100, importance = "permutation",
   splitrule = "gini", min_n = NULL, num_comp = NULL,
-  to_retain = NULL, scores = NULL, skip = FALSE,
+  threshold = NULL, to_retain = NULL, scores = NULL, skip = FALSE,
   id = rand_id("ranger_fs"))
 }
 \arguments{
@@ -38,6 +38,9 @@ been estimated}
 10 for probability}
 
 \item{num_comp}{numeric, the number of best scoring features to select}
+
+\item{threshold}{numeric, percentile of best features to select. Note that
+this overrides num_comp}
 
 \item{to_retain}{character, names of features to retain}
 

@@ -5,8 +5,8 @@
 \title{mRMR feature selection step}
 \usage{
 step_mrmr(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  num_comp = NULL, threads = 0, to_retain = NULL, scores = NULL,
-  skip = FALSE, id = rand_id("mrmr"))
+  num_comp = NULL, threshold = NULL, threads = 0, to_retain = NULL,
+  scores = NULL, skip = FALSE, id = rand_id("mrmr"))
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
@@ -24,6 +24,9 @@ method, these are not currently used}
 been estimated}
 
 \item{num_comp}{numeric, the number of best scoring features to select}
+
+\item{threshold}{numeric, percentile of best features to select. Note that
+this overrides num_comp}
 
 \item{threads}{integer, number of threads to use for processing, default = 0
 uses all available threads}
