@@ -2,6 +2,9 @@
 #'
 #' @param recipe 	A recipe object. The step will be added to the sequence of
 #'   operations for this recipe
+#' @param ... One or more selector functions to choose which variables are
+#'   affected by the step. See selections() for more details. For the tidy
+#'   method, these are not currently used
 #' @param lat selector for variable to represent y coordinate data
 #' @param lon select for variable to represent x coordinate data
 #' @param role Not used by this step since no new variables are created
@@ -24,7 +27,7 @@
 #' @importFrom recipes ellipse_check rand_id add_step
 #' @importFrom rlang enquos
 step_geodist_cluster <- function(
-  recipe,
+  recipe, ...,
   lat = NULL,
   lon = NULL,
   role = "predictor",
@@ -36,9 +39,12 @@ step_geodist_cluster <- function(
   skip = FALSE,
   id = rand_id("geodist_cluster")) {
 
+  terms <- ellipse_check(...)
+
   add_step(
     recipe,
     step_geodist_cluster_new(
+      terms = terms,
       lat = enquo(lat),
       lon = enquo(lon),
       role = role,
@@ -56,11 +62,12 @@ step_geodist_cluster <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_geodist_cluster_new <- function(lon, lat, role, num_comp,
+step_geodist_cluster_new <- function(terms, lon, lat, role, num_comp,
                                      trained, columns, ref_lons, ref_lats, skip,
                                      id) {
   step(
     subclass = "geodist_cluster",
+    terms = terms,
     lon = lon,
     lat = lat,
     role = role,
@@ -93,6 +100,7 @@ step_geodist_cluster_new <- function(lon, lat, role, num_comp,
 #' @export
 prep.step_geodist_cluster <- function(x, training, info = NULL, ...) {
 
+  col_names <- terms_select(terms = x$terms, info = info)
   lon_name <- terms_select(x$lon, info = info)
 
   if (length(lon_name) > 1)
@@ -106,14 +114,14 @@ prep.step_geodist_cluster <- function(x, training, info = NULL, ...) {
 
   if (x$num_comp > 0) {
     km <- kmeans(
-      training[, c(lon_name, lat_name)],
+      training[, c(lon_name, lat_name, col_names)],
       centers = x$num_comp,
       iter.max = 10000,
       algorithm = "Lloyd")
 
     clusters <-
       as_tibble(km$centers) %>%
-      set_names(c("x_crd", "y_crd"))
+      set_names(c("x_crd", "y_crd", col_names))
 
     ref_lats <- clusters[["y_crd"]]
     ref_lons <- clusters[["x_crd"]]
@@ -126,6 +134,7 @@ prep.step_geodist_cluster <- function(x, training, info = NULL, ...) {
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
   step_geodist_cluster_new(
+    terms = x$terms,
     lon = x$lon,
     lat = x$lat,
     role = x$role,
