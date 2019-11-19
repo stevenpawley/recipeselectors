@@ -3,7 +3,6 @@
 \docType{package}
 \name{recipeselectors}
 \alias{recipeselectors}
-\alias{recipeselectors-package}
 \title{recipeselectors: A collection of steps for feature selection to use with the
 'recipes' package}
 \description{

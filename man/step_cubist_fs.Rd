@@ -4,10 +4,21 @@
 \alias{step_cubist_fs}
 \title{Select From Feature Importances (Cubist)}
 \usage{
-step_cubist_fs(recipe, ..., target = NULL, role = "predictor",
-  trained = FALSE, trees = 100, neighbors = 0, num_comp = NULL,
-  threshold = NULL, to_retain = NULL, scores = NULL, skip = FALSE,
-  id = rand_id("cubist_fs"))
+step_cubist_fs(
+  recipe,
+  ...,
+  target = NULL,
+  role = "predictor",
+  trained = FALSE,
+  trees = 100,
+  neighbors = 0,
+  num_comp = NULL,
+  threshold = NULL,
+  to_retain = NULL,
+  scores = NULL,
+  skip = FALSE,
+  id = rand_id("cubist_fs")
+)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of

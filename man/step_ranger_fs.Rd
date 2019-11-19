@@ -4,11 +4,23 @@
 \alias{step_ranger_fs}
 \title{Select From Feature Importances (ranger)}
 \usage{
-step_ranger_fs(recipe, ..., target = NULL, role = "predictor",
-  trained = FALSE, trees = 100, importance = "permutation",
-  splitrule = "gini", min_n = NULL, num_comp = NULL,
-  threshold = NULL, to_retain = NULL, scores = NULL, skip = FALSE,
-  id = rand_id("ranger_fs"))
+step_ranger_fs(
+  recipe,
+  ...,
+  target = NULL,
+  role = "predictor",
+  trained = FALSE,
+  trees = 100,
+  importance = "permutation",
+  splitrule = "gini",
+  min_n = NULL,
+  num_comp = NULL,
+  threshold = NULL,
+  to_retain = NULL,
+  scores = NULL,
+  skip = FALSE,
+  id = rand_id("ranger_fs")
+)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of

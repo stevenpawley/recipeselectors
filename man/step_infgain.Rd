@@ -4,10 +4,21 @@
 \alias{step_infgain}
 \title{Information gain feature selection step}
 \usage{
-step_infgain(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  num_comp = NULL, threshold = NULL, type = "infogain",
-  threads = 1, to_retain = NULL, scores = NULL, skip = FALSE,
-  id = rand_id("infgain"))
+step_infgain(
+  recipe,
+  ...,
+  target = NULL,
+  role = NA,
+  trained = FALSE,
+  num_comp = NULL,
+  threshold = NULL,
+  type = "infogain",
+  threads = 1,
+  to_retain = NULL,
+  scores = NULL,
+  skip = FALSE,
+  id = rand_id("infgain")
+)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of

@@ -4,9 +4,20 @@
 \alias{step_mrmr}
 \title{mRMR feature selection step}
 \usage{
-step_mrmr(recipe, ..., target = NULL, role = NA, trained = FALSE,
-  num_comp = NULL, threshold = NULL, threads = 0, to_retain = NULL,
-  scores = NULL, skip = FALSE, id = rand_id("mrmr"))
+step_mrmr(
+  recipe,
+  ...,
+  target = NULL,
+  role = NA,
+  trained = FALSE,
+  num_comp = NULL,
+  threshold = NULL,
+  threads = 0,
+  to_retain = NULL,
+  scores = NULL,
+  skip = FALSE,
+  id = rand_id("mrmr")
+)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of

@@ -19,7 +19,7 @@ Imports:
     magrittr,
     ranger,
     purrr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Suggests: 
     testthat,
     roxygen2
