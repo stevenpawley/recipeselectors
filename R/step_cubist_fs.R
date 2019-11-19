@@ -1,6 +1,6 @@
-#' Select From Feature Importances (ranger)
+#' Select From Feature Importances (Cubist)
 #'
-#' Feature selection step based on ranger feature importance scores
+#' Feature selection step based on Cubust feature importance scores
 #'
 #' @param recipe A recipe object. The step will be added to the sequence of
 #'   operations for this recipe
@@ -12,13 +12,8 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
-#' @param trees numeric, number of trees in the forest, default is 100
-#' @param importance character, one of `impurity`, `impurity_corrected`,
-#'   `permutation`, default is `permutation`
-#' @param splitrule character, one of `gini`, `variance`, `extratrees`,
-#'   `maxstat`
-#' @param min_n numeric, default is 1 for classification, 5 for regression, and
-#'   10 for probability
+#' @param trees numeric, number of boosting iterations
+#' @param neighbors numeric, default is 0
 #' @param num_comp numeric, the number of best scoring features to select
 #' @param threshold numeric, percentile of best features to select. Note that
 #' this overrides num_comp
@@ -31,38 +26,34 @@
 #'   TRUE as it may affect the computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
-#' @return a step_ranger_fs object
+#' @return a step_cubist_fs object
 #' @importFrom recipes recipes_pkg_check add_step
 #' @export
-step_ranger_fs <- function(
+step_cubist_fs <- function(
   recipe, ...,
   target = NULL,
   role = "predictor",
   trained = FALSE,
   trees = 100,
-  importance = "permutation",
-  splitrule = "gini",
-  min_n = NULL,
+  neighbors = 0,
   num_comp = NULL,
   threshold = NULL,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("ranger_fs")) {
+  id = rand_id("cubist_fs")) {
 
-  recipes_pkg_check("ranger")
+  #recipes_pkg_check("Cubist")
 
   add_step(
     recipe,
-    step_ranger_fs_new(
+    step_cubist_fs_new(
       terms = ellipse_check(...),
       trained = trained,
       target = enquos(target),
       role = role,
       trees = trees,
-      importance = importance,
-      splitrule = splitrule,
-      min_n = min_n,
+      neighbors = neighbors,
       num_comp = num_comp,
       threshold = threshold,
       to_retain = to_retain,
@@ -76,19 +67,17 @@ step_ranger_fs <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_ranger_fs_new <- function(terms, role, trained, target, trees,
-                               importance, splitrule, min_n, num_comp,
-                               threshold, to_retain, scores, skip, id) {
+step_cubist_fs_new <- function(terms, role, trained, target, trees,
+                               neighbors, num_comp, threshold, to_retain,
+                               scores, skip, id) {
   step(
-    subclass = "ranger_fs",
+    subclass = "cubist_fs",
     terms = terms,
     role = role,
     trained = trained,
     target = target,
     trees = trees,
-    importance = importance,
-    splitrule = splitrule,
-    min_n = min_n,
+    neighbors = neighbors,
     num_comp = num_comp,
     threshold = threshold,
     to_retain = to_retain,
@@ -117,7 +106,7 @@ step_ranger_fs_new <- function(terms, role, trained, target, trees,
 #' @importFrom rlang eval_tidy enquos
 #'
 #' @export
-prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
+prep.step_cubist_fs <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
@@ -127,51 +116,36 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
   X <- training[, col_names]
   y <- training[[target_name]]
 
-  if (inherits(y, "numeric")) {
-    mode <- "regression"
-  } else {
-    mode <- "classification"
-  }
-
   model <-
-    rand_forest(trees = x$trees, min_n = x$min_n) %>%
-    set_mode(mode = mode) %>%
-    set_engine("ranger", num.threads = x$num.threads, importance = x$importance,
-               splitrule = x$splitrule, respect.unordered.factors = TRUE,
-               oob.error = TRUE)
+    rand_forest(mode = "regression", trees = x$trees) %>%
+    set_engine("Cubist", neighbors = x$neighbors)
 
   initial_model <- model %>% fit_xy(X, y)
 
-  feature_ranking <- initial_model$fit$variable.importance
-
-  feature_ranking <- tibble(
-    feature = names(feature_ranking),
-    score = feature_ranking)
-
-  feature_ranking <- feature_ranking %>% arrange(desc(!!sym("score")))
+  feature_ranking <- initial_model$fit$usage %>%
+    as_tibble() %>%
+    arrange(desc(!!sym("Model")))
 
   # select k best features
   if (!is.null(x$threshold)) {
-    score_to_exceed <- quantile(feature_ranking$score, x$threshold)
-    x$num_comp <- max(which(feature_ranking$score >= score_to_exceed))
+    score_to_exceed <- quantile(feature_ranking$Model, x$threshold)
+    x$num_comp <- max(which(feature_ranking$Model >= score_to_exceed))
   }
 
   if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
 
-  to_retain <- c(feature_ranking[1:x$num_comp, ][["feature"]], target_name)
+  to_retain <- c(feature_ranking[1:x$num_comp, ][["Variable"]], target_name)
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_ranger_fs_new(
+  step_cubist_fs_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
     target = target_name,
     trees = x$trees,
-    importance = x$importance,
-    splitrule = x$splitrule,
-    min_n = x$min_n,
+    neighbors = x$neighbors,
     num_comp = x$num_comp,
     threshold = x$threshold,
     to_retain = to_retain,
@@ -192,7 +166,7 @@ prep.step_ranger_fs <- function(x, training, info = NULL, ...) {
 #' @importFrom tibble as_tibble
 #'
 #' @export
-bake.step_ranger_fs <- function(object, new_data, ...) {
+bake.step_cubist_fs <- function(object, new_data, ...) {
 
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
 
@@ -200,18 +174,16 @@ bake.step_ranger_fs <- function(object, new_data, ...) {
   as_tibble(new_data)
 }
 
+
 #' @importFrom recipes format_ch_vec
-print.step_ranger_fs <- function(x, width = max(20, options()$width - 40), ...) {
+print.step_cubist_fs <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
     if (x$num_comp == 1) {
       cat("No features were extracted.\n")
     } else {
-      cat("Ranger feature importance (",
-          x$model$fit$importance.mode,
-          ") extraction with ",
-          sep = "")
+      cat("Cubist feature importance (", x$model$fit$usage, ") extraction with ", sep = "")
       cat(format_ch_vec(
-        colnames(x$model$fit$variable.importance), width = width))
+        colnames(x$model$fit$usage), width = width))
     }
   }
   if (x$trained) cat(" [trained]\n") else cat("\n")
@@ -226,7 +198,7 @@ print.step_ranger_fs <- function(x, width = max(20, options()$width - 40), ...) 
 #'
 #' @return tibble
 #' @export
-tunable.step_ranger_fs <- function(x, ...) {
+tunable.step_cubist_fs <- function(x, ...) {
   tibble::tibble(
     name = c("num_comp", "threshold"),
     call_info = list(
@@ -234,7 +206,7 @@ tunable.step_ranger_fs <- function(x, ...) {
       list(pkg = "dials", fun = "threshold")
     ),
     source = "recipe",
-    component = "step_ranger_fs",
+    component = "step_cubist_fs",
     component_id = x$id
   )
 }
