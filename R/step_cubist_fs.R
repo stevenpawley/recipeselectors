@@ -117,7 +117,7 @@ prep.step_cubist_fs <- function(x, training, info = NULL, ...) {
   y <- training[[target_name]]
 
   model <-
-    rand_forest(mode = "regression", trees = x$trees) %>%
+    boost_tree(mode = "regression", trees = x$trees) %>%
     set_engine("Cubist", neighbors = x$neighbors)
 
   initial_model <- model %>% fit_xy(X, y)
