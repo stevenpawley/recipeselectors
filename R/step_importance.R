@@ -1,6 +1,4 @@
-#' Select From Feature Importances (Cubist)
-#'
-#' Feature selection step based on Cubust feature importance scores
+#' Feature selection step using a model's feature importance scores or coefficients
 #'
 #' @param recipe A recipe object. The step will be added to the sequence of
 #'   operations for this recipe
@@ -12,8 +10,7 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
-#' @param trees numeric, number of boosting iterations
-#' @param neighbors numeric, default is 0
+#' @param model A `model_spec` object from `parsnip`
 #' @param num_comp numeric, the number of best scoring features to select
 #' @param threshold numeric, percentile of best features to select. Note that
 #' this overrides num_comp
@@ -26,34 +23,30 @@
 #'   TRUE as it may affect the computations for subsequent operations
 #' @param id A character string that is unique to this step to identify it
 #'
-#' @return a step_cubist_fs object
+#' @return a step_importance object
 #' @importFrom recipes recipes_pkg_check add_step
 #' @export
-step_cubist_fs <- function(
+step_importance <- function(
   recipe, ...,
   target = NULL,
   role = "predictor",
   trained = FALSE,
-  trees = 100,
-  neighbors = 0,
+  model = NULL,
   num_comp = NULL,
   threshold = NULL,
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("cubist_fs")) {
-
-  #recipes_pkg_check("Cubist")
+  id = rand_id("importance1")) {
 
   add_step(
     recipe,
-    step_cubist_fs_new(
+    step_importance_new(
       terms = ellipse_check(...),
       trained = trained,
       target = enquos(target),
       role = role,
-      trees = trees,
-      neighbors = neighbors,
+      model = model,
       num_comp = num_comp,
       threshold = threshold,
       to_retain = to_retain,
@@ -67,17 +60,15 @@ step_cubist_fs <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_cubist_fs_new <- function(terms, role, trained, target, trees,
-                               neighbors, num_comp, threshold, to_retain,
-                               scores, skip, id) {
+step_importance_new <- function(terms, role, trained, target, model, num_comp,
+                                threshold, to_retain, scores, skip, id) {
   step(
-    subclass = "cubist_fs",
+    subclass = "importance",
     terms = terms,
     role = role,
     trained = trained,
     target = target,
-    trees = trees,
-    neighbors = neighbors,
+    model = model,
     num_comp = num_comp,
     threshold = threshold,
     to_retain = to_retain,
@@ -99,14 +90,13 @@ step_cubist_fs_new <- function(terms, role, trained, target, trees,
 #' @param ... Currently unused
 #'
 #' @importFrom tibble tibble
-#' @importFrom dplyr arrange desc
 #' @importFrom stats quantile
 #' @importFrom recipes terms_select check_type
-#' @importFrom parsnip rand_forest set_engine set_mode fit_xy
+#' @importFrom parsnip set_engine set_mode fit_xy
 #' @importFrom rlang eval_tidy enquos
 #'
 #' @export
-prep.step_cubist_fs <- function(x, training, info = NULL, ...) {
+prep.step_importance <- function(x, training, info = NULL, ...) {
 
   # first translate the terms argument into column name
   col_names <- terms_select(terms = x$terms, info = info)
@@ -116,36 +106,29 @@ prep.step_cubist_fs <- function(x, training, info = NULL, ...) {
   X <- training[, col_names]
   y <- training[[target_name]]
 
-  model <-
-    boost_tree(mode = "regression", trees = x$trees) %>%
-    set_engine("Cubist", neighbors = x$neighbors)
-
-  initial_model <- model %>% fit_xy(X, y)
-
-  feature_ranking <- initial_model$fit$usage %>%
-    as_tibble() %>%
-    arrange(desc(!!sym("Model")))
+  initial_model <- x$model %>% fit_xy(X, y)
+  feature_ranking <- pull_importances(initial_model)
+  feature_ranking <- feature_ranking[order(-feature_ranking$importance), ]
 
   # select k best features
   if (!is.null(x$threshold)) {
-    score_to_exceed <- quantile(feature_ranking$Model, x$threshold)
-    x$num_comp <- max(which(feature_ranking$Model >= score_to_exceed))
+    score_to_exceed <- quantile(feature_ranking$importance, x$threshold)
+    x$num_comp <- max(which(feature_ranking$feature >= score_to_exceed))
   }
 
   if (is.null(x$num_comp) & is.null(x$threshold))
     x$num_comp <- length(col_names)
 
-  to_retain <- c(feature_ranking[1:x$num_comp, ][["Variable"]], target_name)
+  to_retain <- c(feature_ranking[1:x$num_comp, ][["feature"]], target_name)
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is set to TRUE
-  step_cubist_fs_new(
+  step_importance_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
     target = target_name,
-    trees = x$trees,
-    neighbors = x$neighbors,
+    model = x$model,
     num_comp = x$num_comp,
     threshold = x$threshold,
     to_retain = to_retain,
@@ -166,24 +149,21 @@ prep.step_cubist_fs <- function(x, training, info = NULL, ...) {
 #' @importFrom tibble as_tibble
 #'
 #' @export
-bake.step_cubist_fs <- function(object, new_data, ...) {
-
+bake.step_importance <- function(object, new_data, ...) {
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
-
-  ## Always convert to tibbles on the way out
   as_tibble(new_data)
 }
 
 
 #' @importFrom recipes format_ch_vec
-print.step_cubist_fs <- function(x, width = max(20, options()$width - 40), ...) {
+print.step_importance <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
     if (x$num_comp == 1) {
       cat("No features were extracted.\n")
     } else {
-      cat("Cubist feature importance (", x$model$fit$usage, ") extraction with ", sep = "")
+      cat("Feature importance (", x$scores, ") extraction with ", sep = "")
       cat(format_ch_vec(
-        colnames(x$model$fit$usage), width = width))
+        colnames(x$scores), width = width))
     }
   }
   if (x$trained) cat(" [trained]\n") else cat("\n")
@@ -198,15 +178,15 @@ print.step_cubist_fs <- function(x, width = max(20, options()$width - 40), ...) 
 #'
 #' @return tibble
 #' @export
-tunable.step_cubist_fs <- function(x, ...) {
+tunable.step_importance <- function(x, ...) {
   tibble::tibble(
     name = c("num_comp", "threshold"),
     call_info = list(
-      list(pkg = "dials", fun = "num_comp"),
-      list(pkg = "dials", fun = "threshold")
+      list(pkg = "dials", fun = "num_comp", range = c(1, 10)),
+      list(pkg = "dials", fun = "threshold", range = c(0, 1))
     ),
     source = "recipe",
-    component = "step_cubist_fs",
+    component = "step_importance",
     component_id = x$id
   )
 }

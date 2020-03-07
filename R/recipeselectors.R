@@ -7,16 +7,20 @@
 #' @examples
 #' library(parsnip)
 #' library(recipes)
-#' library(dplyr)
+#' library(magrittr)
 #'
 #' # load the example iris dataset
 #' data(iris)
 #'
+#' # define a base model to use for feature importances
+#' base_model <- rand_forest(mode = "classification") %>%
+#'     set_engine("ranger", importance = "permutation")
+#'
 #' # create a preprocessing recipe
 #' rec <- iris %>%
 #'  recipe(Species ~ .) %>%
-#'  step_ranger_fs(all_predictors(), num_comp = 2, target = Species,
-#'                 id = "importance_filter")
+#'  step_importance(all_predictors(), model = base_model, num_comp = 2,
+#'                  target = Species, id = "importance_filter")
 #'
 #' prepped <- prep(rec)
 #'

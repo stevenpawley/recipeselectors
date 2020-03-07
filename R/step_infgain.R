@@ -196,8 +196,8 @@ tunable.step_infgain <- function(x, ...) {
   tibble::tibble(
     name = c("num_comp", "threshold"),
     call_info = list(
-      list(pkg = "dials", fun = "num_comp"),
-      list(pkg = "dials", fun = "threshold")
+      list(pkg = "dials", fun = "num_comp", range = c(1, 4)),
+      list(pkg = "dials", fun = "threshold", range = c(0, 1))
     ),
     source = "recipe",
     component = "step_infgain",

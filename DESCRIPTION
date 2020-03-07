@@ -13,13 +13,10 @@ Imports:
     praznik,
     tibble,
     FSelectorRcpp,
-    dplyr,
     parsnip,
     rlang (>= 0.1.2),
-    magrittr,
-    ranger,
-    purrr
-RoxygenNote: 7.0.0
+    magrittr
+RoxygenNote: 7.0.2
 Suggests: 
     testthat,
     roxygen2
