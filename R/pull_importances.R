@@ -103,6 +103,28 @@ pull_importances._H2OMultinomialModel <- function(object, scaled = FALSE, ...) {
   scores
 }
 
+#' @export
+pull_importances._H2ORegressionModel <- function(object, scaled = FALSE, ...) {
+
+  call <- rlang::call2(
+    .fn = "h2o.varimp",
+    .ns = "h2o",
+    object = object$fit
+  )
+
+  scores <- rlang::eval_tidy(call)
+
+  scores <- tibble::tibble(
+    feature = scores$variable,
+    importance = scores$relative_importance
+  )
+
+  if (isTRUE(scaled))
+    scores$importance <- rescale(scores$importance)
+
+  scores
+}
+
 
 #' @export
 pull_importances._ranger <- function(object, scaled = FALSE, ...) {

@@ -16,7 +16,7 @@ step_importance(
   to_retain = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("importance")
+  id = rand_id("importance1")
 )
 }
 \arguments{

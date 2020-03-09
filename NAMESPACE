@@ -2,6 +2,7 @@
 
 S3method(pull_importances,"_C5.0")
 S3method(pull_importances,"_H2OMultinomialModel")
+S3method(pull_importances,"_H2ORegressionModel")
 S3method(pull_importances,"_cubist")
 S3method(pull_importances,"_ranger")
 S3method(pull_importances,"_xgb.Booster")
