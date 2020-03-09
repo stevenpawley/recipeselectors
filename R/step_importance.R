@@ -113,7 +113,7 @@ prep.step_importance <- function(x, training, info = NULL, ...) {
   # select k best features
   if (!is.null(x$threshold)) {
     score_to_exceed <- quantile(feature_ranking$importance, x$threshold)
-    x$num_comp <- max(which(feature_ranking$feature >= score_to_exceed))
+    x$num_comp <- max(which(feature_ranking$importance >= score_to_exceed))
   }
 
   if (is.null(x$num_comp) & is.null(x$threshold))
