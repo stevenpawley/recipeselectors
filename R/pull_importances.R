@@ -164,3 +164,25 @@ pull_importances._cubist <- function(object, scaled = FALSE, ...) {
   scores
 }
 
+
+#' @export
+pull_importances._earth <- function(object, ...) {
+  others <- list(...)
+
+  call <- rlang::call2(
+    .fn = "evimp",
+    .ns = "earth",
+    x = object$fit
+  )
+
+  rlang::call_modify(call, !!!others)
+
+  scores <- rlang::eval_tidy(call)
+
+  scores <- tibble::tibble(
+    feature = rownames(scores),
+    importance = scores[, "rss"]
+  )
+
+  scores
+}
