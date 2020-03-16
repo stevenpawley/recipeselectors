@@ -20,4 +20,5 @@ Suggests:
     roxygen2,
     FSelectorRcpp,
     praznik,
-    ranger
+    ranger,
+    covr

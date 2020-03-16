@@ -19,7 +19,7 @@
 #'   of best features to select. For example, `threshold = 0.9` will retain only
 #'   predictors with scores in the top 90th percentile. Note that this overrides
 #'   num_comp.
-#' @param threads A integer specifying the number of threads to use for
+#' @param threads An integer specifying the number of threads to use for
 #'   processing. The default = 0 uses all available threads.
 #' @param to_retain The names of features that will be retained. This parameter
 #'   is NULL until the recipe is prepped.
@@ -40,12 +40,13 @@
 #' @importFrom rlang enquos
 #'
 #' @examples
+#' library(recipes)
 #' data("iris")
 #' rec <- iris %>%
 #'     recipe(Species ~.) %>%
 #'     step_mrmr(all_predictors(), target = Species, num_comp = 2)
 #' prepped <- prep(rec)
-#' new_data <- juice(rec)
+#' new_data <- juice(prepped)
 step_mrmr <- function(
   recipe, ...,
   target = NULL,

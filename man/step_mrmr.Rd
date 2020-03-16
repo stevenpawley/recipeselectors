@@ -2,7 +2,7 @@
 % Please edit documentation in R/step_mrmr.R
 \name{step_mrmr}
 \alias{step_mrmr}
-\title{mRMR feature selection step}
+\title{Apply minimum Redundancy Maximum Relevance Feature Selection (mRMR)}
 \usage{
 step_mrmr(
   recipe,
@@ -27,37 +27,52 @@ operations for this recipe}
 affected by the step. See selections() for more details. For the tidy
 method, these are not currently used}
 
-\item{target}{name of response variable to evaluation MRMR against}
+\item{target}{Name of response variable used to evaluate the mRMR against.}
 
 \item{role}{Not used by this step since no new variables are created}
 
 \item{trained}{A logical to indicate if the quantities for preprocessing have
 been estimated}
 
-\item{num_comp}{numeric, the number of best scoring features to select}
+\item{num_comp}{The number of best scoring features to select.}
 
-\item{threshold}{numeric, percentile of best features to select. Note that
-this overrides num_comp}
+\item{threshold}{A numeric value between 0 and 1 representing the percentile
+of best features to select. For example, `threshold = 0.9` will retain only
+predictors with scores in the top 90th percentile. Note that this overrides
+num_comp.}
 
-\item{threads}{integer, number of threads to use for processing, default = 0
-uses all available threads}
+\item{threads}{An integer specifying the number of threads to use for
+processing. The default = 0 uses all available threads.}
 
-\item{to_retain}{character, names of features to retain}
+\item{to_retain}{The names of features that will be retained. This parameter
+is NULL until the recipe is prepped.}
 
-\item{scores}{tibble, information gain scores of variables. Only produced
-after the recipe has been trained}
+\item{scores}{A tibble containing the mRMR scores of predictors. This
+parameter is only produced after the recipe has been trained.}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is baked by
 bake.recipe()? While all operations are baked when prep.recipe() is run,
 some operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when using skip =
-TRUE as it may affect the computations for subsequent operations}
+TRUE as it may affect the computations for subsequent operations.}
 
-\item{id}{A character string that is unique to this step to identify it}
+\item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-a step_mrmr object
+a step_mrmr object.
 }
 \description{
-Initial function - simple wrapper around add_step
+`step_mrmr` creates a *specification* of a recipe step that will apply
+minimum Redundancy Maximum Relevance Feature Selection (mRMR) to numeric
+data. The top `num_comp` scoring features, or features whose scores occur
+in the top percentile `threshold` will be retained as new predictors.
+}
+\examples{
+library(recipes)
+data("iris")
+rec <- iris \%>\%
+    recipe(Species ~.) \%>\%
+    step_mrmr(all_predictors(), target = Species, num_comp = 2)
+prepped <- prep(rec)
+new_data <- juice(prepped)
 }

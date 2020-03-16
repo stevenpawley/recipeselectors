@@ -7,13 +7,13 @@
 prep.step_mrmr(x, training, info = NULL, ...)
 }
 \arguments{
-\item{x}{the step object}
+\item{x}{The step object.}
 
-\item{training}{a tibble that has the training set data}
+\item{training}{A tibble that has the training set data.}
 
-\item{info}{a tibble that contains information on the current set of data.
+\item{info}{A tibble that contains information on the current set of data.
 This is updated each time as each step function is evaluated by its prep
-method}
+method.}
 
 \item{...}{Currently unused}
 }

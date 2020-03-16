@@ -22,35 +22,39 @@ step_infgain(
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
-operations for this recipe}
+operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which variables are
 affected by the step. See selections() for more details. For the tidy
-method, these are not currently used}
+method, these are not currently used.}
 
-\item{target}{name of response variable to use to evaluate information gain
-value against the predictors}
+\item{target}{Name of response variable to use to evaluate information gain
+value against the predictors.}
 
-\item{role}{Not used by this step since no new variables are created}
+\item{role}{Not used by this step since no new variables are created.}
 
 \item{trained}{A logical to indicate if the quantities for preprocessing have
-been estimated}
+been estimated.}
 
-\item{num_comp}{numeric, the number of best scoring features to select}
+\item{num_comp}{An integer with the number of best scoring features to
+select.}
 
-\item{threshold}{numeric, percentile of best features to select. Note that
-this overrides num_comp}
+\item{threshold}{A numeric value between 0 and 1 representing the percentile
+of best features to select. For example, `threshold = 0.9` will retain only
+predictors with scores in the top 90th percentile. Note that this overrides
+num_comp.}
 
-\item{type}{character, one of c("infogain", "gainratio", "symuncert").
-Default is 'infogain'}
+\item{type}{Character, one of c("infogain", "gainratio", "symuncert").
+Default is 'infogain'.}
 
-\item{threads}{integer, number of threads to use for processing, default = 0
-uses all available threads}
+\item{threads}{An integer specifying the number of threads to use for
+processing. The default = 0 uses all available threads.}
 
-\item{to_retain}{character, names of features to retain}
+\item{to_retain}{The names of features that will be retained. This parameter
+is NULL until the recipe is prepped.}
 
-\item{scores}{tibble, information gain scores of variables. Only produced
-after the recipe has been trained}
+\item{scores}{A tibble containing the mRMR scores of predictors. This
+parameter is only produced after the recipe has been trained.}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is baked by
 bake.recipe()? While all operations are baked when prep.recipe() is run,
@@ -58,11 +62,20 @@ some operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when using skip =
 TRUE as it may affect the computations for subsequent operations}
 
-\item{id}{A character string that is unique to this step to identify it}
+\item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-a step_infgain object
+a step_infgain object.
 }
 \description{
 Information gain feature selection step
+}
+\examples{
+library(recipes)
+data("iris")
+rec <- iris \%>\%
+    recipe(Species ~.) \%>\%
+    step_infgain(all_predictors(), target = Species, num_comp = 2)
+prepped <- prep(rec)
+new_data <- juice(prepped)
 }

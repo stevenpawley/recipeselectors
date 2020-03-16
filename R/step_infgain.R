@@ -1,36 +1,51 @@
 #' Information gain feature selection step
 #'
 #' @param recipe 	A recipe object. The step will be added to the sequence of
-#'   operations for this recipe
+#'   operations for this recipe.
 #' @param ... One or more selector functions to choose which variables are
 #'   affected by the step. See selections() for more details. For the tidy
-#'   method, these are not currently used
-#' @param role Not used by this step since no new variables are created
+#'   method, these are not currently used.
+#' @param role Not used by this step since no new variables are created.
 #' @param trained A logical to indicate if the quantities for preprocessing have
-#'   been estimated
-#' @param type character, one of c("infogain", "gainratio", "symuncert").
-#' Default is 'infogain'
-#' @param target name of response variable to use to evaluate information gain
-#'   value against the predictors
-#' @param num_comp numeric, the number of best scoring features to select
-#' @param threshold numeric, percentile of best features to select. Note that
-#' this overrides num_comp
-#' @param threads integer, number of threads to use for processing, default = 0
-#'   uses all available threads
-#' @param to_retain character, names of features to retain
-#' @param scores tibble, information gain scores of variables. Only produced
-#' after the recipe has been trained
+#'   been estimated.
+#' @param type Character, one of c("infogain", "gainratio", "symuncert").
+#' Default is 'infogain'.
+#' @param target Name of response variable to use to evaluate information gain
+#'   value against the predictors.
+#' @param num_comp An integer with the number of best scoring features to
+#'   select.
+#' @param threshold A numeric value between 0 and 1 representing the percentile
+#'   of best features to select. For example, `threshold = 0.9` will retain only
+#'   predictors with scores in the top 90th percentile. Note that this overrides
+#'   num_comp.
+#' @param threads An integer specifying the number of threads to use for
+#'   processing. The default = 0 uses all available threads.
+#' @param to_retain The names of features that will be retained. This parameter
+#'   is NULL until the recipe is prepped.
+#' @param scores A tibble containing the mRMR scores of predictors. This
+#'   parameter is only produced after the recipe has been trained.
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
 #'   processing the outcome variable(s)). Care should be taken when using skip =
 #'   TRUE as it may affect the computations for subsequent operations
-#' @param id 	A character string that is unique to this step to identify it
+#' @param id 	A character string that is unique to this step to identify it.
 #'
-#' @return a step_infgain object
+#' @return a step_infgain object.
+#'
 #' @export
+#'
 #' @importFrom recipes ellipse_check rand_id add_step
 #' @importFrom rlang enquos
+#'
+#' @examples
+#' library(recipes)
+#' data("iris")
+#' rec <- iris %>%
+#'     recipe(Species ~.) %>%
+#'     step_infgain(all_predictors(), target = Species, num_comp = 2)
+#' prepped <- prep(rec)
+#' new_data <- juice(prepped)
 step_infgain <- function(
   recipe, ...,
   target = NULL,

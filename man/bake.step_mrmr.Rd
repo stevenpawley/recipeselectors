@@ -2,20 +2,20 @@
 % Please edit documentation in R/step_mrmr.R
 \name{bake.step_mrmr}
 \alias{bake.step_mrmr}
-\title{prep method does not apply the method, it only calculates any required data.
-The bake method is defined to do this.}
+\title{The prep method does not apply the method, it only calculates any required
+data. The bake method is defined to do this.}
 \usage{
 bake.step_mrmr(object, new_data, ...)
 }
 \arguments{
-\item{object}{is the updated step function that has been through the
-corresponding prep code}
+\item{object}{The updated step function that has been through the
+corresponding prep code.}
 
-\item{new_data}{is a tibble of data to be processed}
+\item{new_data}{A tibble of data to be processed.}
 
-\item{...}{currently unused}
+\item{...}{Currently unused.}
 }
 \description{
-prep method does not apply the method, it only calculates any required data.
-The bake method is defined to do this.
+The prep method does not apply the method, it only calculates any required
+data. The bake method is defined to do this.
 }

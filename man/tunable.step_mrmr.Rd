@@ -7,12 +7,12 @@
 tunable.step_mrmr(x, ...)
 }
 \arguments{
-\item{x}{step}
+\item{x}{step.}
 
-\item{...}{currently unused}
+\item{...}{Currently unused.}
 }
 \value{
-tibble
+A tibble.
 }
 \description{
 Specify tunable arguments of step
