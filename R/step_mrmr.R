@@ -1,6 +1,9 @@
-#' mRMR feature selection step
+#' Apply minimum Redundancy Maximum Relevance Feature Selection (mRMR)
 #'
-#' Initial function - simple wrapper around add_step
+#' `step_mrmr` creates a *specification* of a recipe step that will apply
+#' minimum Redundancy Maximum Relevance Feature Selection (mRMR) to numeric
+#' data. The top `num_comp` scoring features, or features whose scores occur
+#' in the top percentile `threshold` will be retained as new predictors.
 #'
 #' @param recipe 	A recipe object. The step will be added to the sequence of
 #'   operations for this recipe
@@ -10,26 +13,39 @@
 #' @param role Not used by this step since no new variables are created
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated
-#' @param target name of response variable to evaluation MRMR against
-#' @param num_comp numeric, the number of best scoring features to select
-#' @param threshold numeric, percentile of best features to select. Note that
-#' this overrides num_comp
-#' @param threads integer, number of threads to use for processing, default = 0
-#'   uses all available threads
-#' @param to_retain character, names of features to retain
-#' @param scores tibble, information gain scores of variables. Only produced
-#' after the recipe has been trained
+#' @param target Name of response variable used to evaluate the mRMR against.
+#' @param num_comp The number of best scoring features to select.
+#' @param threshold A numeric value between 0 and 1 representing the percentile
+#'   of best features to select. For example, `threshold = 0.9` will retain only
+#'   predictors with scores in the top 90th percentile. Note that this overrides
+#'   num_comp.
+#' @param threads A integer specifying the number of threads to use for
+#'   processing. The default = 0 uses all available threads.
+#' @param to_retain The names of features that will be retained. This parameter
+#'   is NULL until the recipe is prepped.
+#' @param scores A tibble containing the mRMR scores of predictors. This
+#'   parameter is only produced after the recipe has been trained.
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
 #'   processing the outcome variable(s)). Care should be taken when using skip =
-#'   TRUE as it may affect the computations for subsequent operations
-#' @param id 	A character string that is unique to this step to identify it
+#'   TRUE as it may affect the computations for subsequent operations.
+#' @param id 	A character string that is unique to this step to identify it.
 #'
-#' @return a step_mrmr object
+#' @return a step_mrmr object.
+#'
 #' @export
+#'
 #' @importFrom recipes ellipse_check rand_id add_step
 #' @importFrom rlang enquos
+#'
+#' @examples
+#' data("iris")
+#' rec <- iris %>%
+#'     recipe(Species ~.) %>%
+#'     step_mrmr(all_predictors(), target = Species, num_comp = 2)
+#' prepped <- prep(rec)
+#' new_data <- juice(rec)
 step_mrmr <- function(
   recipe, ...,
   target = NULL,
@@ -87,12 +103,12 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threshold,
 
 #' Define the estimation procedure
 #'
-#' @param x the step object
+#' @param x The step object.
 #'
-#' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data.
+#' @param training A tibble that has the training set data.
+#' @param info A tibble that contains information on the current set of data.
 #'   This is updated each time as each step function is evaluated by its prep
-#'   method
+#'   method.
 #' @param ... Currently unused
 #'
 #' @importFrom recipes terms_select
@@ -155,13 +171,13 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
 }
 
 
-#' prep method does not apply the method, it only calculates any required data.
-#' The bake method is defined to do this.
+#' The prep method does not apply the method, it only calculates any required
+#' data. The bake method is defined to do this.
 #'
-#' @param object is the updated step function that has been through the
-#'   corresponding prep code
-#' @param new_data is a tibble of data to be processed
-#' @param ... currently unused
+#' @param object The updated step function that has been through the
+#'   corresponding prep code.
+#' @param new_data A tibble of data to be processed.
+#' @param ... Currently unused.
 #'
 #' @importFrom tibble as_tibble
 #'
@@ -191,10 +207,10 @@ print.step_mrmr <- function(x, width = max(20, options()$width - 40), ...) {
 
 #' Specify tunable arguments of step
 #'
-#' @param x step
-#' @param ... currently unused
+#' @param x step.
+#' @param ... Currently unused.
 #'
-#' @return tibble
+#' @return A tibble.
 #' @export
 tunable.step_mrmr <- function(x, ...) {
   tibble::tibble(
