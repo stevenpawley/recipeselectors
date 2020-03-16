@@ -95,8 +95,8 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threshold,
 #'   method
 #' @param ... Currently unused
 #'
-#' @importFrom praznik MRMR
 #' @importFrom recipes terms_select
+#' @importFrom rlang call2 eval_tidy
 #'
 #' @export
 prep.step_mrmr <- function(x, training, info = NULL, ...) {
@@ -110,7 +110,16 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
   y <- training[[target_name]]
 
   # Perform MRMR using all features
-  res <- MRMR(X, y, length(col_names), x$threads)
+  call <- rlang::call2(
+    .fn = "MRMR",
+    .ns = "praznik",
+    X = X,
+    Y = y,
+    k = length(col_names),
+    threads = x$threads
+  )
+
+  res <- eval_tidy(call)
 
   mrmr_tbl <- tibble(
     selection = res$selection,

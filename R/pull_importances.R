@@ -1,7 +1,3 @@
-rescale <- function(x)
-  (x-min(x))/(max(x) - min(x)) * 100
-
-
 #' Pull feature importances from a `model_fit` object
 #'
 #' @param object A `model_fit` object.
@@ -21,6 +17,10 @@ rescale <- function(x)
 pull_importances <- function(object, ...) {
   UseMethod("pull_importances", object)
 }
+
+
+rescale <- function(x)
+  (x-min(x))/(max(x) - min(x)) * 100
 
 
 #' @export
@@ -172,7 +172,7 @@ pull_importances._earth <- function(object, ...) {
   call <- rlang::call2(
     .fn = "evimp",
     .ns = "earth",
-    x = object$fit
+    object = object$fit
   )
 
   rlang::call_modify(call, !!!others)

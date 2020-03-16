@@ -101,7 +101,7 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, threshold,
 #'
 #' @importFrom recipes terms_select
 #' @importFrom stats as.formula
-#' @importFrom rlang eval_tidy
+#' @importFrom rlang eval_tidy call2
 #' @importFrom tibble as_tibble
 #'
 #' @export
@@ -114,10 +114,18 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
   # Perform IG
   f <- as.formula(paste(target_name, "~", paste0(col_names, collapse = " + ")))
 
-  ig_scores <- FSelectorRcpp::information_gain(
-    formula = f, data = training, type = x$type, threads = x$threads,
-    discIntegers = TRUE, equal = FALSE)
+  ig_call <- call2(
+    .fn = "information_gain",
+    .ns = "FSelectorRcpp",
+    formula = f,
+    data = training,
+    type = x$type,
+    threads = x$threads,
+    discIntegers = TRUE,
+    equal = FALSE
+  )
 
+  ig_scores <- eval_tidy(ig_call)
   ig_scores <- as_tibble(ig_scores)
   ig_scores <- ig_scores[order(ig_scores$importance, decreasing = TRUE), ]
 

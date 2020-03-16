@@ -4,19 +4,20 @@ Title: Feature selection steps to be used in conjunction with the `recipes` pack
 Version: 0.0.1
 Author: Steven Pawley
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
-Description: Provides addition steps for feature selection to be used with the `recipes` package.
+Description: Provides additional steps for feature selection to be used with the `recipes` package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
     recipes,
-    praznik,
     tibble,
-    FSelectorRcpp,
     parsnip,
     rlang (>= 0.1.2),
     magrittr
 RoxygenNote: 7.0.2
 Suggests: 
     testthat,
-    roxygen2
+    roxygen2,
+    FSelectorRcpp,
+    praznik,
+    ranger
