@@ -60,6 +60,9 @@ step_mrmr <- function(
   skip = FALSE,
   id = rand_id("mrmr")) {
 
+  if (!"praznik" %in% installed.packages()[, 1])
+    stop("step_infgain requires the package `FSelectorRcpp` to be installed")
+
   terms <- ellipse_check(...)
 
   add_step(
