@@ -186,3 +186,11 @@ pull_importances._earth <- function(object, ...) {
 
   scores
 }
+
+# glm
+# glmnet
+# lm
+# randomForest
+# rpart
+# stan?
+# surv?

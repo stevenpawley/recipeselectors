@@ -1,5 +1,11 @@
 #' Information gain feature selection step
 #'
+#' `step_infgain` creates a *specification* of a recipe step that selects a
+#' subset of predictors based on the scores of the information gain algorithm.
+#' This step requires the FSelectorRcpp package to be installed. The top
+#' `num_comp` scoring features, or features whose scores occur in the top
+#' percentile `threshold` will be retained as new predictors
+#'
 #' @param recipe 	A recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
 #' @param ... One or more selector functions to choose which variables are
@@ -9,7 +15,7 @@
 #' @param trained A logical to indicate if the quantities for preprocessing have
 #'   been estimated.
 #' @param type Character, one of c("infogain", "gainratio", "symuncert").
-#' Default is 'infogain'.
+#'   Default is 'infogain'.
 #' @param target Name of response variable to use to evaluate information gain
 #'   value against the predictors.
 #' @param num_comp An integer with the number of best scoring features to

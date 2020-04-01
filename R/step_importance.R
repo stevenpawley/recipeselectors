@@ -1,31 +1,55 @@
-#' Feature selection step using a model's feature importance scores or coefficients
+#' Feature selection step using a model's feature importance scores or
+#' coefficients
+#'
+#' `step_importance` creates a *specification* of a recipe step that selects a
+#' subset of predictors based on the ranking of variable importance provided by
+#' a `parsnip` model specification and the `model` parameter
 #'
 #' @param recipe A recipe object. The step will be added to the sequence of
-#'   operations for this recipe
+#'   operations for this recipe.
 #' @param ... One or more selector functions to choose which variables are
 #'   affected by the step. See selections() for more details. For the tidy
-#'   method, these are not currently used
-#' @param target name of response variable to use to evaluate information gain
-#'   value against the predictors
-#' @param role Not used by this step since no new variables are created
+#'   method, these are not currently used.
+#' @param target name of response variable to use to evaluate the importance of
+#'   the predictors against.
+#' @param role Not used by this step since no new variables are created.
 #' @param trained A logical to indicate if the quantities for preprocessing have
-#'   been estimated
-#' @param model A `model_spec` object from `parsnip`
-#' @param num_comp numeric, the number of best scoring features to select
+#'   been estimated.
+#' @param model A `model_spec` object from `parsnip`.
+#' @param num_comp numeric, the number of best scoring features to select.
 #' @param threshold numeric, percentile of best features to select. Note that
-#' this overrides num_comp
-#' @param to_retain character, names of features to retain
-#' @param scores tibble, tibble of feature importance scores
+#' this overrides num_comp.
+#' @param to_retain character, names of features to retain.
+#' @param scores tibble, tibble of feature importance scores.
 #' @param skip A logical. Should the step be skipped when the recipe is baked by
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
 #'   processing the outcome variable(s)). Care should be taken when using skip =
-#'   TRUE as it may affect the computations for subsequent operations
-#' @param id A character string that is unique to this step to identify it
+#'   TRUE as it may affect the computations for subsequent operations.
+#' @param id A character string that is unique to this step to identify it.
 #'
-#' @return a step_importance object
+#' @return a `step_importance` object.
 #' @importFrom recipes recipes_pkg_check add_step
 #' @export
+#' @examples
+#' library(parsnip)
+#' library(recipes)
+#' library(magrittr)
+#'
+#' # load the example iris dataset
+#' data(iris)
+#'
+#' # define a base model to use for feature importances
+#' base_model <- rand_forest(mode = "classification") %>%
+#'     set_engine("ranger", importance = "permutation")
+#'
+#' # create a preprocessing recipe
+#' rec <- iris %>%
+#'  recipe(Species ~ .) %>%
+#'  step_importance(all_predictors(), model = base_model, num_comp = 2,
+#'                  target = Species, id = "importance_filter")
+#'
+#' prepped <- prep(rec)
 step_importance <- function(
   recipe, ...,
   target = NULL,
@@ -38,6 +62,9 @@ step_importance <- function(
   scores = NULL,
   skip = FALSE,
   id = rand_id("importance1")) {
+
+  if (missing(model))
+    rlang::abort("Model argument should be a `parsnip` model specification")
 
   add_step(
     recipe,
