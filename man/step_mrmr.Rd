@@ -65,7 +65,7 @@ a step_mrmr object.
 `step_mrmr` creates a *specification* of a recipe step that will apply
 minimum Redundancy Maximum Relevance Feature Selection (mRMR) to numeric
 data. The top `num_comp` scoring features, or features whose scores occur
-in the top percentile `threshold` will be retained as new predictors.
+in the top percentile `threshold` will be retained as new predictors
 }
 \examples{
 library(recipes)

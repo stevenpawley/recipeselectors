@@ -113,21 +113,10 @@ step_infgain_new <- function(terms, role, trained, target, num_comp, threshold,
 }
 
 
-#' Define the estimation procedure
-#'
-#' @param x the step object
-#'
-#' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data.
-#'   This is updated each time as each step function is evaluated by its prep
-#'   method
-#' @param ... Currently unused
-#'
 #' @importFrom recipes terms_select
 #' @importFrom stats as.formula
 #' @importFrom rlang eval_tidy call2
 #' @importFrom tibble as_tibble
-#'
 #' @export
 prep.step_infgain <- function(x, training, info = NULL, ...) {
 
@@ -182,16 +171,7 @@ prep.step_infgain <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' prep method does not apply the method, it only calculates any required data.
-#' The bake method is defined to do this.
-#'
-#' @param object is the updated step function that has been through the
-#'   corresponding prep code
-#' @param new_data is a tibble of data to be processed
-#' @param ... currently unused
-#'
 #' @importFrom tibble as_tibble
-#'
 #' @export
 bake.step_infgain <- function(object, new_data, ...) {
 
@@ -203,6 +183,7 @@ bake.step_infgain <- function(object, new_data, ...) {
 
 
 #' @importFrom recipes format_ch_vec
+#' @export
 print.step_infgain <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
     if (x$num_comp == 0) {
@@ -217,12 +198,6 @@ print.step_infgain <- function(x, width = max(20, options()$width - 40), ...) {
 }
 
 
-#' Specify tunable arguments of step
-#'
-#' @param x step
-#' @param ... currently unused
-#'
-#' @return tibble
 #' @export
 tunable.step_infgain <- function(x, ...) {
   tibble::tibble(

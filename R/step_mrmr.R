@@ -105,19 +105,8 @@ step_mrmr_new <- function(terms, role, trained, target, num_comp, threshold,
   }
 
 
-#' Define the estimation procedure
-#'
-#' @param x The step object.
-#'
-#' @param training A tibble that has the training set data.
-#' @param info A tibble that contains information on the current set of data.
-#'   This is updated each time as each step function is evaluated by its prep
-#'   method.
-#' @param ... Currently unused
-#'
 #' @importFrom recipes terms_select
 #' @importFrom rlang call2 eval_tidy
-#'
 #' @export
 prep.step_mrmr <- function(x, training, info = NULL, ...) {
 
@@ -175,16 +164,7 @@ prep.step_mrmr <- function(x, training, info = NULL, ...) {
 }
 
 
-#' The prep method does not apply the method, it only calculates any required
-#' data. The bake method is defined to do this.
-#'
-#' @param object The updated step function that has been through the
-#'   corresponding prep code.
-#' @param new_data A tibble of data to be processed.
-#' @param ... Currently unused.
-#'
 #' @importFrom tibble as_tibble
-#'
 #' @export
 bake.step_mrmr <- function(object, new_data, ...) {
 
@@ -209,12 +189,6 @@ print.step_mrmr <- function(x, width = max(20, options()$width - 40), ...) {
 }
 
 
-#' Specify tunable arguments of step
-#'
-#' @param x step.
-#' @param ... Currently unused.
-#'
-#' @return A tibble.
 #' @export
 tunable.step_mrmr <- function(x, ...) {
   tibble::tibble(

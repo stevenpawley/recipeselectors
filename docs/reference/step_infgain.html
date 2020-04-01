@@ -36,7 +36,11 @@
 
 
 <meta property="og:title" content="Information gain feature selection step — step_infgain" />
-<meta property="og:description" content="Information gain feature selection step" />
+<meta property="og:description" content="`step_infgain` creates a *specification* of a recipe step that selects a
+subset of predictors based on the scores of the information gain algorithm.
+This step requires the FSelectorRcpp package to be installed. The top
+`num_comp` scoring features, or features whose scores occur in the top
+percentile `threshold` will be retained as new predictors" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,7 +110,11 @@
     </div>
 
     <div class="ref-description">
-    <p>Information gain feature selection step</p>
+    <p>`step_infgain` creates a *specification* of a recipe step that selects a
+subset of predictors based on the scores of the information gain algorithm.
+This step requires the FSelectorRcpp package to be installed. The top
+`num_comp` scoring features, or features whose scores occur in the top
+percentile `threshold` will be retained as new predictors</p>
     </div>
 
     <pre class="usage"><span class='fu'>step_infgain</span>(

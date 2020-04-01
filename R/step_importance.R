@@ -106,22 +106,11 @@ step_importance_new <- function(terms, role, trained, target, model, num_comp,
 }
 
 
-#' Define the estimation procedure
-#'
-#' @param x the step object
-#'
-#' @param training a tibble that has the training set data
-#' @param info a tibble that contains information on the current set of data.
-#'   This is updated each time as each step function is evaluated by its prep
-#'   method
-#' @param ... Currently unused
-#'
 #' @importFrom tibble tibble
 #' @importFrom stats quantile
 #' @importFrom recipes terms_select check_type
 #' @importFrom parsnip set_engine set_mode fit_xy
 #' @importFrom rlang eval_tidy enquos
-#'
 #' @export
 prep.step_importance <- function(x, training, info = NULL, ...) {
 
@@ -165,16 +154,7 @@ prep.step_importance <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' prep method does not apply the method, it only calculates any required data.
-#' The bake method is defined to do this.
-#'
-#' @param object is the updated step function that has been through the
-#'   corresponding prep code
-#' @param new_data is a tibble of data to be processed
-#' @param ... currently unused
-#'
 #' @importFrom tibble as_tibble
-#'
 #' @export
 bake.step_importance <- function(object, new_data, ...) {
   new_data <- new_data[, (colnames(new_data) %in% object$to_retain)]
@@ -183,6 +163,7 @@ bake.step_importance <- function(object, new_data, ...) {
 
 
 #' @importFrom recipes format_ch_vec
+#' @export
 print.step_importance <- function(x, width = max(20, options()$width - 40), ...) {
   if (x$trained) {
     if (x$num_comp == 1) {
@@ -198,12 +179,6 @@ print.step_importance <- function(x, width = max(20, options()$width - 40), ...)
 }
 
 
-#' Specify tunable arguments of step
-#'
-#' @param x step
-#' @param ... currently unused
-#'
-#' @return tibble
 #' @export
 tunable.step_importance <- function(x, ...) {
   tibble::tibble(

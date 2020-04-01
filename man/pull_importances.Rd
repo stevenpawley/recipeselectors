@@ -2,7 +2,7 @@
 % Please edit documentation in R/pull_importances.R
 \name{pull_importances}
 \alias{pull_importances}
-\title{Pull feature importances from a `model_fit` object}
+\title{Pull feature importances from a parsnip fitted model}
 \usage{
 pull_importances(object, ...)
 }
@@ -16,13 +16,44 @@ method.}
 tibble
 }
 \description{
-Pull feature importances from a `model_fit` object
+`pull_importances` is a generic function to extract feature importance scores
+or coefficients from a parsnip `model_fit` object and return them as a tibble
+with a 'feature' and 'importance' column. This is designed to support the
+`step_importance` recipe step.
+}
+\details{
+Most of the basic models within the parsnip package that support feature
+importances are implemented (call `methods(pull_importances)` to list models
+that are currently implemented). If need to pull the feature importance scores
+from a model that is not currently supported in this package, then you can
+add a class to the pull_importances generic function which returns a
+two-column tibble:
 }
 \examples{
-\dontrun{
+library(parsnip)
+
+# pull feature importances from a model_fit object
 model <- boost_tree(mode = "classification") \%>\%
-set_engine("xgboost")
+    set_engine("xgboost")
 model_fit <- model \%>\% fit(Species ~., iris)
 pull_importances(model_fit)
+
+# create a new pull_importances method
+pull_importances._ranger <- function(object, scaled = FALSE, ...) {
+    # create a call to the ranger::importance function avoiding having to use
+    # ranger as a dependency
+    call <- rlang::call2(.fn = "importance", .ns = "ranger", x = object$fit)
+    scores <- rlang::eval_tidy(call)
+
+    # create a tibble with 'feature' and 'importance' columns
+    scores <- tibble::tibble(
+      feature = names(scores),
+      importance = as.numeric(scores)
+    )
+    # optionally rescale the importance scores
+    if (isTRUE(scaled))
+      scores$importance <- rescale(scores$importance)
+
+    scores
 }
 }

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pull feature importances from a `model_fit` object — pull_importances • recipeselectors</title>
+<title>Pull feature importances from a parsnip fitted model — pull_importances • recipeselectors</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Pull feature importances from a `model_fit` object — pull_importances" />
-<meta property="og:description" content="Pull feature importances from a `model_fit` object" />
+<meta property="og:title" content="Pull feature importances from a parsnip fitted model — pull_importances" />
+<meta property="og:description" content="`pull_importances` is a generic function to extract feature importance scores
+or coefficients from a parsnip `model_fit` object and return them as a tibble
+with a 'feature' and 'importance' column. This is designed to support the
+`step_importance` recipe step." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -100,13 +103,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Pull feature importances from a `model_fit` object</h1>
+    <h1>Pull feature importances from a parsnip fitted model</h1>
     
     <div class="hidden name"><code>pull_importances.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Pull feature importances from a `model_fit` object</p>
+    <p>`pull_importances` is a generic function to extract feature importance scores
+or coefficients from a parsnip `model_fit` object and return them as a tibble
+with a 'feature' and 'importance' column. This is designed to support the
+`step_importance` recipe step.</p>
     </div>
 
     <pre class="usage"><span class='fu'>pull_importances</span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
@@ -128,20 +134,54 @@ method.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>tibble</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Most of the basic models within the parsnip package that support feature
+importances are implemented (call `methods(pull_importances)` to list models
+that are currently implemented). If need to pull the feature importance scores
+from a model that is not currently supported in this package, then you can
+add a class to the pull_importances generic function which returns a
+two-column tibble:</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'>boost_tree</span>(<span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>"classification"</span>) <span class='kw'>%&gt;%</span>
-<span class='fu'>set_engine</span>(<span class='st'>"xgboost"</span>)
-<span class='no'>model_fit</span> <span class='kw'>&lt;-</span> <span class='no'>model</span> <span class='kw'>%&gt;%</span> <span class='fu'>fit</span>(<span class='no'>Species</span> ~<span class='no'>.</span>, <span class='no'>iris</span>)
-<span class='fu'>pull_importances</span>(<span class='no'>model_fit</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>parsnip</span>)
+
+<span class='co'># pull feature importances from a model_fit object</span>
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/boost_tree.html'>boost_tree</a></span>(<span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>"classification"</span>) <span class='kw'>%&gt;%</span>
+    <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/set_engine.html'>set_engine</a></span>(<span class='st'>"xgboost"</span>)
+<span class='no'>model_fit</span> <span class='kw'>&lt;-</span> <span class='no'>model</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/reexports.html'>fit</a></span>(<span class='no'>Species</span> ~<span class='no'>.</span>, <span class='no'>iris</span>)
+<span class='fu'>pull_importances</span>(<span class='no'>model_fit</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 4 x 2</span><span>
+#&gt;   feature      importance
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> Petal.Length    0.677  
+#&gt; </span><span style='color: #555555;'>2</span><span> Petal.Width     0.313  
+#&gt; </span><span style='color: #555555;'>3</span><span> Sepal.Width     0.007</span><span style='text-decoration: underline;'>77</span><span>
+#&gt; </span><span style='color: #555555;'>4</span><span> Sepal.Length    0.002</span><span style='text-decoration: underline;'>31</span><span></div><div class='input'>
+<span class='co'># create a new pull_importances method</span>
+<span class='no'>pull_importances._ranger</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>object</span>, <span class='no'>scaled</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>) {
+    <span class='co'># create a call to the ranger::importance function avoiding having to use</span>
+    <span class='co'># ranger as a dependency</span>
+    <span class='no'>call</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rlang</span><span class='kw ns'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/call2.html'>call2</a></span>(<span class='kw'>.fn</span> <span class='kw'>=</span> <span class='st'>"importance"</span>, <span class='kw'>.ns</span> <span class='kw'>=</span> <span class='st'>"ranger"</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>object</span>$<span class='no'>fit</span>)
+    <span class='no'>scores</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rlang</span><span class='kw ns'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/eval_tidy.html'>eval_tidy</a></span>(<span class='no'>call</span>)
+
+    <span class='co'># create a tibble with 'feature' and 'importance' columns</span>
+    <span class='no'>scores</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>tibble</span><span class='kw ns'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span>(
+      <span class='kw'>feature</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>scores</span>),
+      <span class='kw'>importance</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='no'>scores</span>)
+    )
+    <span class='co'># optionally rescale the importance scores</span>
+    <span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/Logic.html'>isTRUE</a></span>(<span class='no'>scaled</span>))
+      <span class='no'>scores</span>$<span class='no'>importance</span> <span class='kw'>&lt;-</span> <span class='fu'>rescale</span>(<span class='no'>scores</span>$<span class='no'>importance</span>)
+
+    <span class='no'>scores</span>
+}</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

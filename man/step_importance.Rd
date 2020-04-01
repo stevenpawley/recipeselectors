@@ -2,7 +2,8 @@
 % Please edit documentation in R/step_importance.R
 \name{step_importance}
 \alias{step_importance}
-\title{Feature selection step using a model's feature importance scores or coefficients}
+\title{Feature selection step using a model's feature importance scores or
+coefficients}
 \usage{
 step_importance(
   recipe,
@@ -21,42 +22,64 @@ step_importance(
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
-operations for this recipe}
+operations for this recipe.}
 
 \item{...}{One or more selector functions to choose which variables are
 affected by the step. See selections() for more details. For the tidy
-method, these are not currently used}
+method, these are not currently used.}
 
-\item{target}{name of response variable to use to evaluate information gain
-value against the predictors}
+\item{target}{name of response variable to use to evaluate the importance of
+the predictors against.}
 
-\item{role}{Not used by this step since no new variables are created}
+\item{role}{Not used by this step since no new variables are created.}
 
 \item{trained}{A logical to indicate if the quantities for preprocessing have
-been estimated}
+been estimated.}
 
-\item{model}{A `model_spec` object from `parsnip`}
+\item{model}{A `model_spec` object from `parsnip`.}
 
-\item{num_comp}{numeric, the number of best scoring features to select}
+\item{num_comp}{numeric, the number of best scoring features to select.}
 
 \item{threshold}{numeric, percentile of best features to select. Note that
-this overrides num_comp}
+this overrides num_comp.}
 
-\item{to_retain}{character, names of features to retain}
+\item{to_retain}{character, names of features to retain.}
 
-\item{scores}{tibble, tibble of feature importance scores}
+\item{scores}{tibble, tibble of feature importance scores.}
 
 \item{skip}{A logical. Should the step be skipped when the recipe is baked by
 bake.recipe()? While all operations are baked when prep.recipe() is run,
 some operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when using skip =
-TRUE as it may affect the computations for subsequent operations}
+TRUE as it may affect the computations for subsequent operations.}
 
-\item{id}{A character string that is unique to this step to identify it}
+\item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-a step_importance object
+a `step_importance` object.
 }
 \description{
-Feature selection step using a model's feature importance scores or coefficients
+`step_importance` creates a *specification* of a recipe step that selects a
+subset of predictors based on the ranking of variable importance provided by
+a `parsnip` model specification and the `model` parameter
+}
+\examples{
+library(parsnip)
+library(recipes)
+library(magrittr)
+
+# load the example iris dataset
+data(iris)
+
+# define a base model to use for feature importances
+base_model <- rand_forest(mode = "classification") \%>\%
+    set_engine("ranger", importance = "permutation")
+
+# create a preprocessing recipe
+rec <- iris \%>\%
+ recipe(Species ~ .) \%>\%
+ step_importance(all_predictors(), model = base_model, num_comp = 2,
+                 target = Species, id = "importance_filter")
+
+prepped <- prep(rec)
 }

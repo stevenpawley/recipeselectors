@@ -68,7 +68,11 @@ TRUE as it may affect the computations for subsequent operations}
 a step_infgain object.
 }
 \description{
-Information gain feature selection step
+`step_infgain` creates a *specification* of a recipe step that selects a
+subset of predictors based on the scores of the information gain algorithm.
+This step requires the FSelectorRcpp package to be installed. The top
+`num_comp` scoring features, or features whose scores occur in the top
+percentile `threshold` will be retained as new predictors
 }
 \examples{
 library(recipes)
