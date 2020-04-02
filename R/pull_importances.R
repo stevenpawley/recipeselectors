@@ -220,10 +220,116 @@ pull_importances._earth <- function(object, ...) {
   scores
 }
 
-# glm
-# glmnet
-# lm
-# randomForest
-# rpart
+
+#' @export
+pull_importances._lm <- function(object, intercept = FALSE, ...) {
+  others <- list(...)
+
+  scores <- tibble::tibble(
+    feature = names(coefficients(object$fit)),
+    importance = coefficients(object$fit)
+  )
+
+  if (isFALSE(intercept))
+    scores <- scores[scores$feature != "(Intercept)", ]
+
+  scores
+}
+
+
+#' @export
+pull_importances._glm <- function(object, intercept = FALSE, ...) {
+  others <- list(...)
+
+  scores <- tibble::tibble(
+    feature = names(coefficients(object$fit)),
+    importance = coefficients(object$fit)
+  )
+
+  if (isFALSE(intercept))
+    scores <- scores[scores$feature != "(Intercept)", ]
+
+  scores
+}
+
+
+#' @export
+pull_importances._elnet <- function(object, intercept = FALSE, penalty = NULL, ...) {
+
+  if (!is.null(penalty)) {
+    s <- penalty
+  } else {
+    s <- object$spec$args$penalty
+  }
+
+  if (is.null(s))
+    rlang::abort("model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method")
+
+  scores <- tibble::tibble(
+    feature = rownames(coef(object$fit, s = s)),
+    importance = coef(object$fit, s = s)[, 1]
+  )
+
+  if (isFALSE(intercept))
+    scores <- scores[scores$feature != "(Intercept)", ]
+
+  scores
+}
+
+
+#' @export
+pull_importances._lognet <- function(object, intercept = FALSE, penalty = NULL, ...) {
+
+  if (!is.null(penalty)) {
+    s <- penalty
+  } else {
+    s <- object$spec$args$penalty
+  }
+
+  if (is.null(s))
+    rlang::abort("model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method")
+
+  scores <- tibble::tibble(
+    feature = rownames(coef(object$fit, s = s)),
+    importance = coef(object$fit, s = s)[, 1]
+  )
+
+  if (isFALSE(intercept))
+    scores <- scores[scores$feature != "(Intercept)", ]
+
+  scores
+}
+
+
+#' @export
+pull_importances._randomForest <- function(object, scaled = FALSE, ...) {
+
+  scores <- tibble::tibble(
+    feature = rownames(object$fit$importance),
+    importance = object$fit$importance
+  )
+
+  if (isTRUE(scaled))
+    scores$importance <- rescale(scores$importance)
+
+  scores
+}
+
+
+#' @export
+pull_importances._rpart <- function(object, scaled = FALSE, ...) {
+
+  scores <- tibble::tibble(
+    feature = names(object$fit$variable.importance),
+    importance = object$fit$variable.importance
+  )
+
+  if (isTRUE(scaled))
+    scores$importance <- rescale(scores$importance)
+
+  scores
+}
+
+
 # stan?
 # surv?
