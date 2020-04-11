@@ -31,6 +31,8 @@ Methods that are planned to be added:
 - Selection using permutation importance scores
 - Boruta feature selection
 - Univariate feature selection methods (Chi-squared, ANOVA f-value, linear model)
+- Exhaustive feature selection
+- Random feature selection
 
 ## Feature importances based selection
 
