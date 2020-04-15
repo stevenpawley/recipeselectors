@@ -33,6 +33,7 @@ Methods that are planned to be added:
 - Univariate feature selection methods (Chi-squared, ANOVA f-value, linear model)
 - Exhaustive feature selection
 - Random feature selection
+- Carscore
 
 ## Feature importances based selection
 
