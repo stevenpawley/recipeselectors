@@ -256,18 +256,15 @@ pull_importances._glm <- function(object, intercept = FALSE, ...) {
 #' @export
 pull_importances._elnet <- function(object, intercept = FALSE, penalty = NULL, ...) {
 
-  if (!is.null(penalty)) {
-    s <- penalty
-  } else {
-    s <- object$spec$args$penalty
-  }
+  if (is.null(penalty))
+    penalty <- object$spec$args$penalty
 
-  if (is.null(s))
+  if (is.null(penalty))
     rlang::abort("model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method")
 
   scores <- tibble::tibble(
-    feature = rownames(coef(object$fit, s = s)),
-    importance = coef(object$fit, s = s)[, 1]
+    feature = rownames(coef(object$fit, s = penalty)),
+    importance = coef(object$fit, s = penalty)[, 1]
   )
 
   if (isFALSE(intercept))
