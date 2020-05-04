@@ -30,10 +30,11 @@ Methods that are planned to be added:
 
 - Selection using permutation importance scores
 - Boruta feature selection
-- Univariate feature selection methods (Chi-squared, ANOVA f-value, linear model)
 - Exhaustive feature selection
 - Random feature selection
 - Carscore
+
+Univariate filter-based steps are already included in the `recipes` package, e.g. `step_corr` to univariate filter selection using correlation coefficients.
 
 ## Feature importances based selection
 
