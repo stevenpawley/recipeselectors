@@ -15,8 +15,9 @@ Imports:
     rlang (>= 0.1.2),
     magrittr,
     dplyr,
-    withr,
-    pROC
+    scales,
+    pROC,
+    stats
 RoxygenNote: 7.1.0.9000
 Suggests: 
     testthat,

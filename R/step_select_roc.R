@@ -95,64 +95,17 @@ step_select_roc_new <-
     )
   }
 
-
-check_zero_one <- function(x) {
-  if (is.na(x)) {
-    return(x)
-  } else {
-    if (is.numeric(x)) {
-      if (x >= 1 | x <= 0) {
-        rlang::abort("`threshold` should be on (0, 1).")
-      }
-    } else {
-      rlang::abort("`threshold` should be numeric.")
-    }
-  }
-  return(x)
-}
-
-check_top_p <- function(x, n) {
-  if (is.na(x)) {
-    return(x)
-  } else {
-    if (is.numeric(x)) {
-      if (!is.integer(x)) {
-        x <- as.integer(x)
-      }
-      if (x >= n | x <= 0) {
-        msg <- paste0("`top_p` should be on (0, ", n, ").")
-        rlang::warn(msg)
-        x <- min(n - 1, x)
-      }
-    } else {
-      rlang::abort("`top_p` should be numeric.")
-    }
-  }
-  x
-}
-
-check_criteria <- function(top_p, threshold, cl) {
-  if (is.na(top_p) & is.na(threshold)) {
-    msg <- paste0(
-      "For `",
-      cl[[1]],
-      "`, `top_p` and `threshold` cannot both be missing."
-    )
-    rlang::abort(msg)
-  }
-  invisible(NULL)
-}
-
 roc_calc <- function(x, y) {
-  withr::with_message_sink(
-    tempfile(),
-    {
-      if (length(levels(y)) == 2) {
-        res <- try(pROC::roc(y, x, direction = "auto"), silent = TRUE)
-      } else {
-        res <- try(pROC::multiclass.roc(y, x, direction = "auto"), silent = TRUE)
+  suppressMessages(
+    suppressWarnings(
+      {
+        if (length(levels(y)) == 2) {
+          res <- try(pROC::roc(y, x, direction = "auto"), silent = TRUE)
+        } else {
+          res <- try(pROC::multiclass.roc(y, x, direction = "auto"), silent = TRUE)
+        }
       }
-    }
+    )
   )
 
   if (inherits(res, "try-error")) {
@@ -182,24 +135,7 @@ prep.step_select_roc <- function(x, training, info = NULL, ...) {
 
     # filter
     scores <- purrr::map_dbl(training[, x_names], ~ roc_calc(.x, training[[y_name]]))
-    scores <- rev(sort(scores))
-
-    # This part should be made into a reusable function
-    if (!is.na(x$top_p)) {
-      top_p_lgl <- seq_along(scores) <= x$top_p
-      top_p_lgl[is.na(top_p_lgl)] <- FALSE
-    } else {
-      top_p_lgl <- rep(TRUE, length(scores))
-    }
-
-    if (!is.na(x$threshold)) {
-      threshold_lgl <- scores >= x$threshold
-      threshold_lgl[is.na(threshold_lgl)] <- FALSE
-    } else {
-      threshold_lgl <- rep(FALSE, length(scores))
-    }
-    keep_lgl <- top_p_lgl | threshold_lgl
-    exclude_chr <- names(scores)[!keep_lgl]
+    exclude_chr <- dual_filter(scores, x$top_p, x$threshold, maximize = TRUE)
   } else {
     exclude_chr <- character()
   }
@@ -228,7 +164,14 @@ bake.step_select_roc <- function(object, new_data, ...) {
 
 #' @export
 print.step_select_roc <- function(x, width = max(20, options()$width - 30), ...) {
-  cat("ROC curve feature selection\n")
+  cat("ROC curve feature selection")
+
+  if(recipes::is_trained(x)) {
+    n <- length(x$exclude)
+    cat(paste0(" (", n, " excluded)"))
+  }
+  cat("\n")
+
   invisible(x)
 }
 
@@ -239,25 +182,13 @@ tidy.step_select_roc <- function(x, ...) {
   if (recipes::is_trained(x)) {
     res <- tibble(terms = x$exclude)
   } else {
-    term_names <- sel2char(x$terms)
-    res <- tibble(terms = na_chr)
+    term_names <- recipes::sel2char(x$terms)
+    res <- tibble(terms = rlang::na_chr)
   }
   res$id <- x$id
   res
 }
 
-
-#' @export
-top_p <- function(range = c(1L, 4L), trans = NULL) {
-  dials::new_quant_param(
-    type = "integer",
-    range = range,
-    inclusive = c(TRUE, TRUE),
-    trans = trans,
-    label = c(top_p = "# Selected Predictors"),
-    finalize = dials::get_p
-  )
-}
 
 
 #' @export
