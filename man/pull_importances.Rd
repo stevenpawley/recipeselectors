@@ -4,10 +4,13 @@
 \alias{pull_importances}
 \title{Pull feature importances from a parsnip fitted model}
 \usage{
-pull_importances(object, ...)
+pull_importances(object, scaled = TRUE, ...)
 }
 \arguments{
 \item{object}{A `model_fit` object.}
+
+\item{scaled}{A logical indicating whether to rescale the importances between
+0 and 1. Default is TRUE.}
 
 \item{...}{A list of other parameters passed to the feature importance
 method.}
