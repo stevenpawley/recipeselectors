@@ -91,7 +91,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stevenpawley/recipeselectors/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,7 +111,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Filter Numeric Predictors using ROC Curve</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stevenpawley/recipeselectors/blob/master/R/step_select_roc.R'><code>R/step_select_roc.R</code></a></small>
     <div class="hidden name"><code>step_select_roc.Rd</code></div>
     </div>
 
@@ -136,16 +141,31 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>recipe</th>
+      <td><p>A recipe object. The step will be added to the sequence of
+operations for this recipe.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>One or more selector functions to choose which predictors are
 affected by the step. See [selections()] for more details. For the `tidy`
 method, these are not currently used.</p></td>
     </tr>
     <tr>
+      <th>outcome</th>
+      <td><p>A single character string that specifies a single categorical
+variable to be used as the class.</p></td>
+    </tr>
+    <tr>
       <th>role</th>
       <td><p>For model terms created by this step, what analysis role should
 they be assigned?. By default, the function assumes that resulting distances
 will be used as predictors in a model.</p></td>
+    </tr>
+    <tr>
+      <th>trained</th>
+      <td><p>A logical to indicate if the quantities for preprocessing have
+been estimated.</p></td>
     </tr>
     <tr>
       <th>threshold</th>
@@ -166,13 +186,20 @@ from the data. This will be set when `prep()` is used on the recipe and
 should not be set by the user.</p></td>
     </tr>
     <tr>
-      <th>x</th>
-      <td><p>A `step_select_roc` object.</p></td>
+      <th>skip</th>
+      <td><p>A logical. Should the step be skipped when the recipe is baked by
+bake.recipe()? While all operations are baked when prep.recipe() is run,
+some operations may not be able to be conducted on new data (e.g.
+processing the outcome variable(s)). Care should be taken when using skip =
+TRUE as it may affect the computations for subsequent operations.</p></td>
     </tr>
     <tr>
-      <th>class</th>
-      <td><p>A single character string that specifies a single categorical
-variable to be used as the class.</p></td>
+      <th>id</th>
+      <td><p>A character string that is unique to this step to identify it.</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>A `step_select_roc` object.</p></td>
     </tr>
     </table>
 

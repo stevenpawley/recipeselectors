@@ -93,7 +93,12 @@ percentile `threshold` will be retained as new predictors." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stevenpawley/recipeselectors/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,7 +113,7 @@ percentile `threshold` will be retained as new predictors." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Information gain feature selection step</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stevenpawley/recipeselectors/blob/master/R/step_select_infgain.R'><code>R/step_select_infgain.R</code></a></small>
     <div class="hidden name"><code>step_select_infgain.Rd</code></div>
     </div>
 
@@ -208,7 +213,7 @@ only produced after the recipe has been trained.</p></td>
 bake.recipe()? While all operations are baked when prep.recipe() is run,
 some operations may not be able to be conducted on new data (e.g.
 processing the outcome variable(s)). Care should be taken when using skip =
-TRUE as it may affect the computations for subsequent operations</p></td>
+TRUE as it may affect the computations for subsequent operations.</p></td>
     </tr>
     <tr>
       <th>id</th>
@@ -236,8 +241,9 @@ TRUE as it may affect the computations for subsequent operations</p></td>
     <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/recipe.html'>recipe</a></span>(<span class='no'>Species</span> ~<span class='no'>.</span>) <span class='kw'>%&gt;%</span>
     <span class='fu'>step_select_infgain</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"Species"</span>, <span class='kw'>top_p</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 
-<span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)</div><div class='output co'>#&gt; <span class='error'>Error in call2(.fn = "information_gain", .ns = "FSelectorRcpp", formula = f,     data = training, type = x$type, threads = x$threads, discIntegers = TRUE,     equal = FALSE): could not find function "call2"</span></div><div class='input'>
-<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fully_trained(object): object 'prepped' not found</span></div></pre>
+<span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)
+
+<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

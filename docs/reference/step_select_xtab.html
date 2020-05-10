@@ -91,7 +91,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stevenpawley/recipeselectors/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,7 +111,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Filter Categorical Predictors using Contingency Tables</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stevenpawley/recipeselectors/blob/master/R/step_select_xtab.R'><code>R/step_select_xtab.R</code></a></small>
     <div class="hidden name"><code>step_select_xtab.Rd</code></div>
     </div>
 
@@ -138,16 +143,31 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>recipe</th>
+      <td><p>A recipe object. The step will be added to the sequence of
+operations for this recipe.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>One or more selector functions to choose which predictors are
 affected by the step. See [selections()] for more details. For the `tidy`
 method, these are not currently used.</p></td>
     </tr>
     <tr>
+      <th>outcome</th>
+      <td><p>A single character string that specifies a single categorical
+variable to be used as the class.</p></td>
+    </tr>
+    <tr>
       <th>role</th>
       <td><p>For model terms created by this step, what analysis role should
 they be assigned?. By default, the function assumes that resulting distances
 will be used as predictors in a model.</p></td>
+    </tr>
+    <tr>
+      <th>trained</th>
+      <td><p>A logical to indicate if the quantities for preprocessing have
+been estimated.</p></td>
     </tr>
     <tr>
       <th>threshold</th>
@@ -176,13 +196,20 @@ from the data. This will be set when `prep()` is used on the recipe and
 should not be set by the user.</p></td>
     </tr>
     <tr>
-      <th>x</th>
-      <td><p>A `step_select_xtab` object.</p></td>
+      <th>skip</th>
+      <td><p>A logical. Should the step be skipped when the recipe is baked by
+bake.recipe()? While all operations are baked when prep.recipe() is run,
+some operations may not be able to be conducted on new data (e.g.
+processing the outcome variable(s)). Care should be taken when using skip =
+TRUE as it may affect the computations for subsequent operations.</p></td>
     </tr>
     <tr>
-      <th>class</th>
-      <td><p>A single character string that specifies a single categorical
-variable to be used as the class.</p></td>
+      <th>id</th>
+      <td><p>A character string that is unique to this step to identify it.</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>A `step_select_xtab` object.</p></td>
     </tr>
     </table>
 
@@ -213,15 +240,15 @@ both are used, they are combined via 'or'.</p>
 <span class='fu'>tidy</span>(<span class='no'>rec</span>, <span class='kw'>number</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 9 x 2</span><span>
 #&gt;   terms                    id               
 #&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>            
-#&gt; </span><span style='color: #555555;'>1</span><span> JobSatisfaction          select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>2</span><span> WorkLifeBalance          select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>3</span><span> Department               select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>4</span><span> RelationshipSatisfaction select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>5</span><span> Gender                   select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>6</span><span> Education                select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>7</span><span> PerformanceRating        select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>8</span><span> EducationField           select_xtab_kzIbw
-#&gt; </span><span style='color: #555555;'>9</span><span> JobRole                  select_xtab_kzIbw</div><div class='input'>
+#&gt; </span><span style='color: #555555;'>1</span><span> JobSatisfaction          select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>2</span><span> WorkLifeBalance          select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>3</span><span> Department               select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>4</span><span> RelationshipSatisfaction select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>5</span><span> Gender                   select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>6</span><span> Education                select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>7</span><span> PerformanceRating        select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>8</span><span> EducationField           select_xtab_9H5PX
+#&gt; </span><span style='color: #555555;'>9</span><span> JobRole                  select_xtab_9H5PX</div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
