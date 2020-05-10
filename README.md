@@ -15,33 +15,50 @@ devtools::install_github("stevenpawley/recipeselectors")
 
 The following feature selection methods are implemented:
 
-- Information Gain via the `step_select_infgain` function. This step requires
-the `FSelectorRcpp` package to be installed.
-- maximum Relevancy Minimum Redundancy via the `step_select_mrmr` function. This
-step requires the `praznik` package to be installed.
-- Model-based selection from feature importances or coefficients via the
-`step_select_vip` function. This method allows a `parsnip` model specification
-to be used to select a subset of features based on the models' feature
-importances or coefficients. See below for details.
+- `step_select_infgain` provides Information Gain feature selection. This step
+requires the `FSelectorRcpp` package to be installed.
+
+- `step_select_mrmr` provides maximum Relevancy Minimum Redundancy feature
+selection. This step requires the `praznik` package to be installed.
+
+- `step_select_roc` provides ROC-based feature selection based on each
+predictors' relationship with the response outcomeas measured using a Receiver
+Operating Characteristic curve. Thanks to Max Kuhn, along with many other useful
+suggestions.
+
+- `step_select_xtab` provides feature selection using statistical association
+(also thanks to Max Kuhn).
+
+- `step_select_vip` provides model-based selection using feature importance
+scores or coefficients. This method allows a `parsnip` model specification to be
+used to select a subset of features based on the models' feature importances or
+coefficients. See below for details.
+
+## Under Development
 
 Methods that are planned to be added:
 
-- Selection using permutation importance scores
 - Boruta feature selection
-- Exhaustive feature selection
-- Random feature selection
+
 - Carscore
 
-Unsupervised filter-based steps are already included in the `recipes` package,
-e.g. `step_corr` to univariate filter selection using correlation coefficients.
+- Relief-based methods
 
-## Feature importances based selection
+## Notes on Wrapper Feature Selection Methods
+
+The focus of `recipeselectors` is to provide extra recipes for filter-based 
+feature selection. A single wrapper method is also included using the variable
+importance scores of selected algorithms for feature selection.
 
 The `step_select_vip` is designed to work with the `parsnip` package and
 requires a base model specification that provides a method of ranking the
 importance of features, such as feature importance scores or coefficients, with
 one score per feature. The base model is specified in the step using the `model`
 parameter.
+
+A limitation is that the model used in the `step_select_vip` cannot be tuned.
+This step is likely to be superceded in the future with a more appropriate
+structure that allows both variable selection and tuning. 
 
 The parsnip package does not currently contain a method of pulling feature 
 importance scores from models that support them. The `recipeselectors` package
@@ -51,8 +68,11 @@ a fitted parsnip model, and returns a tibble with two columns 'feature' and
 
 ```
 model <- boost_tree(mode = "classification") %>%
-set_engine("xgboost")
-model_fit <- model %>% fit(Species ~., iris)
+  set_engine("xgboost")
+
+model_fit <- model %>% 
+  fit(Species ~., iris)
+
 pull_importances(model_fit)
 ```
 
@@ -65,17 +85,7 @@ pull_importances generic function which returns a two-column tibble:
 
 ```
 pull_importances._ranger <- function(object, scaled = FALSE, ...) {
-
-  # create a call to the ranger::importance function. This avoids having to use
-  # ranger as a dependency in the package. For your own code you could call the
-  # function directly
-  call <- rlang::call2(
-    .fn = "importance",
-    .ns = "ranger",
-    x = object$fit
-  )
-
-  scores <- rlang::eval_tidy(call)
+  scores <- ranger::importance(object$fit)
 
   # create a tibble with 'feature' and 'importance' columns
   scores <- tibble::tibble(
@@ -86,7 +96,6 @@ pull_importances._ranger <- function(object, scaled = FALSE, ...) {
   # optionally rescale the importance scores
   if (scaled)
     scores$importance <- scales::rescale(scores$importance)
-
   scores
 }
 ```
