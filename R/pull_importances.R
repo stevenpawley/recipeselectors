@@ -53,10 +53,8 @@ pull_importances <- function(object, scaled = TRUE, ...) {
   UseMethod("pull_importances", object)
 }
 
-
 rescale <- function(x)
   (x - min(x)) / (max(x) - min(x)) * 100
-
 
 #' @export
 pull_importances.default <- function(object, scaled = TRUE, ...) {
@@ -65,7 +63,6 @@ pull_importances.default <- function(object, scaled = TRUE, ...) {
     class(object)[1]
   ))
 }
-
 
 #' @export
 pull_importances._xgb.Booster <-
@@ -86,7 +83,6 @@ pull_importances._xgb.Booster <-
 
     scores
   }
-
 
 #' @export
 pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
@@ -109,7 +105,6 @@ pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
 
   scores
 }
-
 
 #' @export
 pull_importances._H2OMultinomialModel <-
@@ -177,7 +172,6 @@ pull_importances._cubist <- function(object, scaled = TRUE, ...) {
   scores
 }
 
-
 #' @export
 pull_importances._earth <- function(object, scaled = TRUE, ...) {
   others <- list(...)
@@ -218,7 +212,6 @@ pull_importances._lm <-
 
     scores
   }
-
 
 #' @export
 pull_importances._glm <-

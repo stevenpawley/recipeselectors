@@ -22,6 +22,7 @@ p_threshold <- function(range = c(-10, -0.001), trans = scales::log10_trans()) {
     finalize = NULL
   )
 }
+
 check_zero_one <- function(x) {
   if (is.na(x)) {
     return(x)
@@ -69,7 +70,6 @@ check_criteria <- function(top_p, threshold, cl) {
   invisible(NULL)
 }
 
-
 dual_filter <- function(x, top_p, threshold, maximize) {
   na_x <- x[ is.na(x)]
   x <- x[!is.na(x)]
@@ -98,3 +98,32 @@ dual_filter <- function(x, top_p, threshold, maximize) {
   c(names(x)[!keep_lgl], names(na_x))
 }
 
+select_percentile <- function(x, top_p, threshold, maximize) {
+  # filter a named vector by the top_p features or using a percentile
+  # threshold
+
+  x <- x[!is.na(x)]
+
+  if (!is.na(threshold)) {
+    p_to_exceed <- quantile(x, threshold)
+
+    if (maximize) {
+      removals <- x < p_to_exceed
+    } else {
+      removals <- x >= p_to_exceed
+    }
+
+    removals <- names(removals[removals])
+
+  } else {
+    if (maximize) {
+      x <- sort(x, decreasing = TRUE)
+    } else {
+      x <- sort(x, decreasing = FALSE)
+    }
+
+    removals <- names(x[-seq_len(top_p)])
+  }
+
+  removals
+}

@@ -20,7 +20,7 @@ step_select_xtab(
   id = rand_id("select_xtab")
 )
 
-tidy.step_select_xtab(x, ...)
+\method{tidy}{step_select_xtab}(x, ...)
 }
 \arguments{
 \item{...}{One or more selector functions to choose which predictors are

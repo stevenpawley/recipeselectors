@@ -18,7 +18,7 @@ step_select_roc(
   id = rand_id("select_roc")
 )
 
-tidy.step_select_roc(x, ...)
+\method{tidy}{step_select_roc}(x, ...)
 }
 \arguments{
 \item{...}{One or more selector functions to choose which predictors are
