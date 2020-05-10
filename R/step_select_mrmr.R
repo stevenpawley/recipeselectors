@@ -133,8 +133,8 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
     call <- rlang::call2(
       .fn = "MRMR",
       .ns = "praznik",
-      X = training[, x_names],
-      Y = training[[y_name]],
+      X = quo(training[, x_names]),
+      Y = quo(training[[y_name]]),
       k = length(x_names),
       threads = x$threads
     )
