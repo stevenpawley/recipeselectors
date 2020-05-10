@@ -1,11 +1,9 @@
-
 # recipeselectors
 
-The goal of recipeselectors is to provide feature selection steps to be used
-with the tidymodels recipes package.
+The goal of recipeselectors is to provide extra supervised feature selection
+steps to be used with the tidymodels recipes package.
 
-The package is under development, although the currently implemented steps
-are functional.
+The package is under development.
 
 ## Installation
 
@@ -17,14 +15,14 @@ devtools::install_github("stevenpawley/recipeselectors")
 
 The following feature selection methods are implemented:
 
-- Information Gain via the `step_infgain` function. This step requires the 
-`FSelectorRcpp` package to be installed.
-- maximum Relevancy Minimum Redundancy via the `step_mrmr` function. This step
-requires the `praznik` package to be installed.
+- Information Gain via the `step_select_infgain` function. This step requires
+the `FSelectorRcpp` package to be installed.
+- maximum Relevancy Minimum Redundancy via the `step_select_mrmr` function. This
+step requires the `praznik` package to be installed.
 - Model-based selection from feature importances or coefficients via the
-`step_importance` function. This method allows a `parsnip` model specification to
-be used to select a subset of features based on the models' feature importances
-or coefficients. See below for details.
+`step_select_vip` function. This method allows a `parsnip` model specification
+to be used to select a subset of features based on the models' feature
+importances or coefficients. See below for details.
 
 Methods that are planned to be added:
 
@@ -34,11 +32,12 @@ Methods that are planned to be added:
 - Random feature selection
 - Carscore
 
-Univariate filter-based steps are already included in the `recipes` package, e.g. `step_corr` to univariate filter selection using correlation coefficients.
+Unsupervised filter-based steps are already included in the `recipes` package,
+e.g. `step_corr` to univariate filter selection using correlation coefficients.
 
 ## Feature importances based selection
 
-The `step_importance` is designed to work with the `parsnip` package and
+The `step_select_vip` is designed to work with the `parsnip` package and
 requires a base model specification that provides a method of ranking the
 importance of features, such as feature importance scores or coefficients, with
 one score per feature. The base model is specified in the step using the `model`
@@ -85,8 +84,8 @@ pull_importances._ranger <- function(object, scaled = FALSE, ...) {
   )
 
   # optionally rescale the importance scores
-  if (isTRUE(scaled))
-    scores$importance <- rescale(scores$importance)
+  if (scaled)
+    scores$importance <- scales::rescale(scores$importance)
 
   scores
 }
@@ -109,8 +108,8 @@ base_model <- rand_forest(mode = "classification") %>%
 # create a preprocessing recipe
 rec <- iris %>%
 recipe(Species ~ .) %>%
-step_importance(all_predictors(), model = base_model, num_comp = 2,
-                target = Species, id = "importance_filter")
+step_select_vip(all_predictors(), model = base_model, top_p = 2,
+                outcome = "Species")
 
 prepped <- prep(rec)
 

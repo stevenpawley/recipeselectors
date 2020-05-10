@@ -122,15 +122,8 @@ related to feature selection to be used with the 'recipes' package.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>parsnip</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>recipes</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: dplyr</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘recipes’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    step</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>magrittr</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>recipes</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>magrittr</span>)
 
 <span class='co'># load the example iris dataset</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>iris</span>)
@@ -142,17 +135,16 @@ related to feature selection to be used with the 'recipes' package.</p>
 <span class='co'># create a preprocessing recipe</span>
 <span class='no'>rec</span> <span class='kw'>&lt;-</span> <span class='no'>iris</span> <span class='kw'>%&gt;%</span>
  <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/recipe.html'>recipe</a></span>(<span class='no'>Species</span> ~ <span class='no'>.</span>) <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='step_importance.html'>step_importance</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>base_model</span>, <span class='kw'>num_comp</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-                 <span class='kw'>target</span> <span class='kw'>=</span> <span class='no'>Species</span>, <span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>"importance_filter"</span>)
-
-<span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)
-
+ <span class='fu'>step_importance</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>base_model</span>, <span class='kw'>num_comp</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+                 <span class='kw'>target</span> <span class='kw'>=</span> <span class='no'>Species</span>, <span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>"importance_filter"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in step_importance(., all_predictors(), model = base_model, num_comp = 2,     target = Species, id = "importance_filter"): could not find function "step_importance"</span></div><div class='input'>
+<span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prep(rec): object 'rec' not found</span></div><div class='input'>
 <span class='co'># create a model specification</span>
 <span class='no'>clf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/decision_tree.html'>decision_tree</a></span>(<span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>"classification"</span>) <span class='kw'>%&gt;%</span>
     <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/set_engine.html'>set_engine</a></span>(<span class='st'>"rpart"</span>)
 
 <span class='no'>clf_fitted</span> <span class='kw'>&lt;-</span> <span class='no'>clf</span> <span class='kw'>%&gt;%</span>
-    <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/reexports.html'>fit</a></span>(<span class='no'>Species</span> ~ <span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>))</div></pre>
+    <span class='fu'><a href='https://rdrr.io/pkg/parsnip/man/reexports.html'>fit</a></span>(<span class='no'>Species</span> ~ <span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>))</div><div class='output co'>#&gt; <span class='error'>Error in fully_trained(object): object 'prepped' not found</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -168,7 +160,7 @@ related to feature selection to be used with the 'recipes' package.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

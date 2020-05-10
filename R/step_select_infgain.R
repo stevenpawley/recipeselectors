@@ -37,7 +37,7 @@
 #'   bake.recipe()? While all operations are baked when prep.recipe() is run,
 #'   some operations may not be able to be conducted on new data (e.g.
 #'   processing the outcome variable(s)). Care should be taken when using skip =
-#'   TRUE as it may affect the computations for subsequent operations
+#'   TRUE as it may affect the computations for subsequent operations.
 #' @param id 	A character string that is unique to this step to identify it.
 #' @return A step_select_infgain object.
 #' @export
@@ -53,11 +53,11 @@
 #' @examples
 #' library(recipes)
 #'
-#' data("iris")
+#' data(cells, package = "modeldata")
 #'
-#' rec <- iris %>%
-#'     recipe(Species ~.) %>%
-#'     step_select_infgain(all_predictors(), outcome = "Species", top_p = 2)
+#' rec <-
+#'  recipe(class ~ ., data = cells[, -1]) %>%
+#'  step_select_infgain(all_predictors(), outcome = "class", top_p = 2)
 #'
 #' prepped <- prep(rec)
 #'
@@ -103,8 +103,9 @@ step_select_infgain <- function(
 
 # wrapper around 'step' function that sets the class of new step objects
 #' @importFrom recipes step
-step_select_infgain_new <- function(terms, role, trained, outcome, top_p, threshold,
-                                    type, threads, exclude, scores, skip, id) {
+step_select_infgain_new <- function(terms, role, trained, outcome, top_p,
+                                    threshold, type, threads, exclude, scores,
+                                    skip, id) {
   step(
     subclass = "select_infgain",
     terms = terms,
@@ -141,7 +142,7 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
 
     f <- as.formula(paste(y_name, "~", paste0(x_names, collapse = " + ")))
 
-    ig_call <- call2(
+    ig_call <- rlang::call2(
       .fn = "information_gain",
       .ns = "FSelectorRcpp",
       formula = f,
@@ -152,10 +153,10 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
       equal = FALSE
     )
 
-    res <- eval_tidy(ig_call)
+    res <- rlang::eval_tidy(ig_call)
     res <- as_tibble(res)
-    res <- set_names(res, c("variable", "score"))
-    res$score <- set_names(res$score, res$variable)
+    res <- rlang::set_names(res, c("variable", "score"))
+    res$score <- rlang::set_names(res$score, res$variable)
 
     exclude <-
       select_percentile(res$score, x$top_p, x$threshold, maximize = TRUE)
@@ -183,9 +184,11 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom tibble as_tibble
+#' @importFrom recipes bake
 bake.step_select_infgain <- function(object, new_data, ...) {
-  new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
+  if (length(object$exclude > 0)) {
+    new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
+  }
   as_tibble(new_data)
 }
 

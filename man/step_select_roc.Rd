@@ -21,13 +21,22 @@ step_select_roc(
 \method{tidy}{step_select_roc}(x, ...)
 }
 \arguments{
+\item{recipe}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
+
 \item{...}{One or more selector functions to choose which predictors are
 affected by the step. See [selections()] for more details. For the `tidy`
 method, these are not currently used.}
 
+\item{outcome}{A single character string that specifies a single categorical
+variable to be used as the class.}
+
 \item{role}{For model terms created by this step, what analysis role should
 they be assigned?. By default, the function assumes that resulting distances
 will be used as predictors in a model.}
+
+\item{trained}{A logical to indicate if the quantities for preprocessing have
+been estimated.}
 
 \item{threshold}{A numeric value, in AUC units, where predictors with ROC
 AUC values _larger_ than the threshold will be retained. A value of `NA`
@@ -41,10 +50,15 @@ ignored.}
 from the data. This will be set when `prep()` is used on the recipe and
 should not be set by the user.}
 
-\item{x}{A `step_select_roc` object.}
+\item{skip}{A logical. Should the step be skipped when the recipe is baked by
+bake.recipe()? While all operations are baked when prep.recipe() is run,
+some operations may not be able to be conducted on new data (e.g.
+processing the outcome variable(s)). Care should be taken when using skip =
+TRUE as it may affect the computations for subsequent operations.}
 
-\item{class}{A single character string that specifies a single categorical
-variable to be used as the class.}
+\item{id}{A character string that is unique to this step to identify it.}
+
+\item{x}{A `step_select_roc` object.}
 }
 \value{
 An updated version of `recipe` with the new step

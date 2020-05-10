@@ -49,11 +49,11 @@
 #' @examples
 #' library(recipes)
 #'
-#' data("iris")
+#' data(cells, package = "modeldata")
 #'
-#' rec <- iris %>%
-#'     recipe(Species ~.) %>%
-#'     step_select_mrmr(all_predictors(), outcome = "Species", top_p = 2)
+#' rec <-
+#'  recipe(class ~ ., data = cells[, -1]) %>%
+#'  step_select_mrmr(all_predictors(), outcome = "class", top_p = 2)
 #'
 #' prepped <- prep(rec)
 #'
@@ -130,7 +130,7 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
 
   if (length(x_names) > 0) {
 
-    call <- call2(
+    call <- rlang::call2(
       .fn = "MRMR",
       .ns = "praznik",
       X = training[, x_names],
@@ -139,7 +139,7 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
       threads = x$threads
     )
 
-    res <- eval_tidy(call)
+    res <- rlang::eval_tidy(call)
 
     res <- tibble(
       variable = names(res$selection),
@@ -171,7 +171,9 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
 #' @export
 #' @export bake.step_select_mrmr
 bake.step_select_mrmr <- function(object, new_data, ...) {
-  new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
+  if (length(object$exclude) > 0) {
+    new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
+  }
   as_tibble(new_data)
 }
 

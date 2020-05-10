@@ -3,7 +3,7 @@ library(recipes)
 library(tibble)
 data("iris")
 
-test_that("correct mrmr scores", {
+test_that("step_select_mrmr, execution", {
   skip_if_not_installed("praznik")
 
   irisX <- iris[-5]
@@ -12,19 +12,20 @@ test_that("correct mrmr scores", {
   res <- praznik::MRMR(X = irisX, Y = y, k = 4)
 
   mrmr_scores <- tibble(
-    selection = res$selection,
-    score = res$score,
-    attribute = names(res$selection))
+    variable = names(res$score),
+    scores = res$score
+  )
 
   rec <- recipe(Species ~ ., data = iris)
 
   mrmr_rec <- rec %>%
-    step_mrmr(all_predictors(), target = Species, num_comp = 2) %>% prep()
+    step_select_mrmr(all_predictors(), outcome = "Species", top_p = 2) %>%
+    prep()
 
   mrmr_pred <- juice(mrmr_rec)
-  expect_true(all(names(mrmr_pred) %in% c(mrmr_scores$attribute[1:2], "Species")))
+  expect_true(all(names(mrmr_pred)[1:2] %in% mrmr_scores$variable[1:2]))
 
-  expect_equal(mrmr_scores, mrmr_rec$steps[[1]]$scores)
+  expect_equal(mrmr_scores$scores, mrmr_rec$steps[[1]]$scores$score)
 })
 
 

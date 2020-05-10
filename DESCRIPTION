@@ -1,19 +1,28 @@
 Package: recipeselectors
 Type: Package
-Title: Supervised feature selection steps to be used in conjunction with the 'recipes' package
+Title: Extra Recipes Steps for Supervised Feature Selection
 Version: 0.0.1
-Author: Steven Pawley
+Authors@R: 
+    person(given = "Steven",
+           family = "Pawley",
+           role = c("aut", "cre"),
+           email = "dr.stevenpawley@gmail.com")
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
-Description: Provides additional steps for supervised feature selection to be used with the 'recipes' package.
+Description: Provides additional steps for supervised feature selection to be 
+    used with the 'recipes' package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/stevenpawley/recipeselectors
+BugReports: https://github.com/stevenpawley/recipeselectors/issues
 Depends:
      R (>= 2.10),
      recipes
 Imports:
     tibble,
     parsnip,
+    dials,
+    purrr,
     rlang (>= 0.1.2),
     magrittr,
     dplyr,
@@ -27,4 +36,5 @@ Suggests:
     FSelectorRcpp,
     praznik,
     ranger,
+    modeldata,
     covr

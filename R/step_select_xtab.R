@@ -4,10 +4,12 @@
 #'  filter predictors using their relationship with the outcome as measured
 #'  using statistical tests for association.
 #'
+#' @param recipe 	A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
 #' @param ... One or more selector functions to choose which predictors are
 #'  affected by the step. See [selections()] for more details. For the `tidy`
 #'  method, these are not currently used.
-#' @param class A single character string that specifies a single categorical
+#' @param outcome A single character string that specifies a single categorical
 #'  variable to be used as the class.
 #' @param role For model terms created by this step, what analysis role should
 #'  they be assigned?. By default, the function assumes that resulting distances
@@ -23,6 +25,14 @@
 #' @param exclude A character vector of predictor names that will be removed
 #'  from the data. This will be set when `prep()` is used on the recipe and
 #'  should not be set by the user.
+#' @param trained A logical to indicate if the quantities for preprocessing have
+#'   been estimated.
+#' @param skip A logical. Should the step be skipped when the recipe is baked by
+#'   bake.recipe()? While all operations are baked when prep.recipe() is run,
+#'   some operations may not be able to be conducted on new data (e.g.
+#'   processing the outcome variable(s)). Care should be taken when using skip =
+#'   TRUE as it may affect the computations for subsequent operations.
+#' @param id 	A character string that is unique to this step to identify it.
 #' @return An updated version of `recipe` with the new step added to the
 #'  sequence of existing steps (if any). For the `tidy` method, a tibble with a
 #'  `terms` column for which predictors were removed.
@@ -158,7 +168,6 @@ prep.step_select_xtab <- function(x, training, info = NULL, ...) {
   )
 }
 
-
 #' @export
 bake.step_select_xtab <- function(object, new_data, ...) {
   if (length(object$exclude) > 0) {
@@ -194,8 +203,6 @@ tidy.step_select_xtab <- function(x, ...) {
   res
 }
 
-
-
 #' @export
 #' @export tunable.step_select_xtab
 tunable.step_select_xtab <- function(x, ...) {
@@ -203,7 +210,7 @@ tunable.step_select_xtab <- function(x, ...) {
     name = c("top_p", "threshold"),
     call_info = list(
       list(pkg = "recipeselectors", fun = "top_p"),
-      list(pkg = "dials", fun = "p_threshold", range = c(-10, -1))
+      list(pkg = "dials", fun = "threshold", range = c(-10, -1))
     ),
     source = "recipe",
     component = "step_select_xtab",

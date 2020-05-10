@@ -2,10 +2,9 @@ library(testthat)
 library(recipes)
 library(tibble)
 library(parsnip)
-library(ranger)
 data("iris")
 
-test_that("feature importance selection using num_comp", {
+test_that("step_select_vip, execution using top_p", {
   skip_if_not_installed("ranger")
 
   irisX <- iris[-5]
@@ -16,11 +15,11 @@ test_that("feature importance selection using num_comp", {
 
   rec <- iris %>%
     recipe(Species ~.) %>%
-    step_importance(
+    step_select_vip(
       all_predictors(),
-      target = Species,
+      outcome = "Species",
       model = base_model,
-      num_comp = 2
+      top_p = 2
     )
 
   prepped <- prep(rec)
@@ -30,7 +29,7 @@ test_that("feature importance selection using num_comp", {
 })
 
 
-test_that("feature importance selection using threshold", {
+test_that("step_select_vip, execution using threshold", {
   skip_if_not_installed("ranger")
 
   irisX <- iris[-5]
@@ -42,9 +41,9 @@ test_that("feature importance selection using threshold", {
   # test selection by retaining features with scores >= 50th percentile
   rec <- iris %>%
     recipe(Species ~.) %>%
-    step_importance(
+    step_select_vip(
       all_predictors(),
-      target = Species,
+      outcome = "Species",
       model = base_model,
       threshold = 0.5
     )
@@ -57,9 +56,9 @@ test_that("feature importance selection using threshold", {
   # test selection by retaining features with scores in 90th percentile
   rec <- iris %>%
     recipe(Species ~.) %>%
-    step_importance(
+    step_select_vip(
       all_predictors(),
-      target = Species,
+      outcome = "Species",
       model = base_model,
       threshold = 0.9
     )

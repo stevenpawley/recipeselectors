@@ -43,21 +43,20 @@
 #' @importFrom recipes add_step
 #' @export
 #' @examples
-#' library(parsnip)
 #' library(recipes)
+#' library(parsnip)
 #'
 #' # load the example iris dataset
-#' data(iris)
+#' data(cells, package = "modeldata")
 #'
 #' # define a base model to use for feature importances
 #' base_model <- rand_forest(mode = "classification") %>%
 #'     set_engine("ranger", importance = "permutation")
 #'
 #' # create a preprocessing recipe
-#' rec <- iris %>%
-#'  recipe(Species ~ .) %>%
-#'  step_select_vip(all_predictors(), model = base_model, top_p = 2,
-#'                  outcome = "Species")
+#' rec <-
+#'  recipe(class ~ ., data = cells[, -1]) %>%
+#'  step_select_vip(all_predictors(), model = base_model, top_p = 2, outcome = "class")
 #'
 #' prepped <- prep(rec)
 #'
@@ -133,7 +132,7 @@ prep.step_select_vip <- function(x, training, info = NULL, ...) {
   initial_model <- fit_xy(x$model, X, y)
   res <- pull_importances(initial_model)
   names(res) <- c("variable", "score")
-  res$score <- set_names(res$score, res$variable)
+  res$score <- rlang::set_names(res$score, res$variable)
 
   exclude <-
     select_percentile(res$score, x$top_p, x$threshold, maximize = TRUE)
@@ -156,7 +155,9 @@ prep.step_select_vip <- function(x, training, info = NULL, ...) {
 #' @importFrom tibble as_tibble
 #' @export
 bake.step_select_vip <- function(object, new_data, ...) {
-  new_data <- new_data[, !colnames(new_data) %in% object$exclude]
+  if (length(object$exclude) > 0) {
+    new_data <- new_data[, !colnames(new_data) %in% object$exclude]
+  }
   as_tibble(new_data)
 }
 

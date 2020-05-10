@@ -24,8 +24,8 @@ base_model <- rand_forest(mode = "classification") \%>\%
 # create a preprocessing recipe
 rec <- iris \%>\%
  recipe(Species ~ .) \%>\%
- step_importance(all_predictors(), model = base_model, num_comp = 2,
-                 target = Species, id = "importance_filter")
+ step_select_vip(all_predictors(), model = base_model, top_p = 2,
+                 outcome = "Species")
 
 prepped <- prep(rec)
 
