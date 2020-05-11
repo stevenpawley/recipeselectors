@@ -17,7 +17,7 @@ step_select_mrmr(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_mrmr")
+  id = recipes::rand_id("select_mrmr")
 )
 
 \method{tidy}{step_select_mrmr}(x, ...)

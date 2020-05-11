@@ -17,7 +17,7 @@ step_select_xtab(
   fdr = TRUE,
   exclude = NULL,
   skip = FALSE,
-  id = rand_id("select_xtab")
+  id = recipes::rand_id("select_xtab")
 )
 
 \method{tidy}{step_select_xtab}(x, ...)

@@ -41,7 +41,6 @@
 #' @param id 	A character string that is unique to this step to identify it.
 #' @return A step_select_infgain object.
 #' @export
-#' @importFrom recipes ellipse_check rand_id add_step recipes_pkg_check
 #' @keywords datagen
 #' @concept preprocessing
 #' @concept supervised_filter
@@ -74,13 +73,13 @@ step_select_infgain <- function(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_infgain")) {
+  id = recipes::rand_id("select_infgain")) {
 
-  recipes_pkg_check("FSelectorRcpp")
+  recipes::recipes_pkg_check("FSelectorRcpp")
 
-  terms <- ellipse_check(...)
+  terms <- recipes::ellipse_check(...)
 
-  add_step(
+  recipes::add_step(
     recipe,
     step_select_infgain_new(
       terms = terms,
@@ -101,11 +100,10 @@ step_select_infgain <- function(
 
 
 # wrapper around 'step' function that sets the class of new step objects
-#' @importFrom recipes step
 step_select_infgain_new <- function(terms, role, trained, outcome, top_p,
                                     threshold, type, threads, exclude, scores,
                                     skip, id) {
-  step(
+  recipes::step(
     subclass = "select_infgain",
     terms = terms,
     role = role,
@@ -124,13 +122,10 @@ step_select_infgain_new <- function(terms, role, trained, outcome, top_p,
 
 
 #' @export
-#' @importFrom recipes terms_select
-#' @importFrom stats as.formula
-#' @importFrom rlang quo
 prep.step_select_infgain <- function(x, training, info = NULL, ...) {
   # extract response and predictor names
-  x_names <- terms_select(terms = x$terms, info = info)
-  y_name <- terms_select(x$outcome, info = info)
+  x_names <- recipes::terms_select(terms = x$terms, info = info)
+  y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- y_name[1]
 
   # check criteria
@@ -141,13 +136,13 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
   # information gain
   if (length(x_names) > 0) {
 
-    f <- as.formula(paste(y_name, "~", paste0(x_names, collapse = " + ")))
+    f <- stats::as.formula(paste(y_name, "~", paste0(x_names, collapse = " + ")))
 
     ig_call <- rlang::call2(
       .fn = "information_gain",
       .ns = "FSelectorRcpp",
       formula = f,
-      data = quo(training),
+      data = rlang::quo(training),
       type = x$type,
       threads = x$threads,
       discIntegers = TRUE,
@@ -166,8 +161,6 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
     exclude <- character()
   }
 
-  # Use the constructor function to return the updated object
-  # Note that `trained` is set to TRUE
   step_select_infgain_new(
     terms = x$terms,
     trained = TRUE,
@@ -185,7 +178,6 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @rdname bake
 bake.step_select_infgain <- function(object, new_data, ...) {
   if (length(object$exclude > 0)) {
     new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
@@ -221,7 +213,6 @@ tidy.step_select_infgain <- function(x, ...) {
 }
 
 #' @export
-#' @rdname tunable
 tunable.step_select_infgain <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),

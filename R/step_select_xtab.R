@@ -72,11 +72,11 @@ step_select_xtab <- function(recipe,
                              fdr = TRUE,
                              exclude = NULL,
                              skip = FALSE,
-                             id = rand_id("select_xtab")) {
-  add_step(
+                             id = recipes::rand_id("select_xtab")) {
+  recipes::add_step(
     recipe,
     step_select_xtab_new(
-      terms = ellipse_check(...),
+      terms = recipes::ellipse_check(...),
       outcome = outcome,
       role = role,
       trained = trained,
@@ -94,7 +94,7 @@ step_select_xtab <- function(recipe,
 step_select_xtab_new <-
   function(terms, outcome, role, trained, threshold, top_p, exact, fdr,
            exclude, skip, id) {
-    step(
+    recipes::step(
       subclass = "select_xtab",
       terms = terms,
       outcome = outcome,
@@ -123,17 +123,16 @@ tbl_calc <- function(x, y, exact) {
   res
 }
 
-
 #' @export
 prep.step_select_xtab <- function(x, training, info = NULL, ...) {
-  y_name <- terms_select(x$outcome, info = info)
+  y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- x$outcome[1]
-  check_type(training[, y_name], quant = FALSE)
-  x_names <- terms_select(x$terms, info = info, empty_fun = I)
+  recipes::check_type(training[, y_name], quant = FALSE)
+  x_names <- recipes::terms_select(x$terms, info = info, empty_fun = I)
 
   if(length(x_names) > 0) {
 
-    check_type(training[, x_names], quant = FALSE)
+    recipes::check_type(training[, x_names], quant = FALSE)
 
     # check criteria
     check_criteria(x$top_p, x$threshold, match.call())
@@ -204,7 +203,6 @@ tidy.step_select_xtab <- function(x, ...) {
 }
 
 #' @export
-#' @rdname tunable
 tunable.step_select_xtab <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),

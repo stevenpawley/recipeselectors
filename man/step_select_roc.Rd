@@ -15,7 +15,7 @@ step_select_roc(
   top_p = NA,
   exclude = NULL,
   skip = FALSE,
-  id = rand_id("select_roc")
+  id = recipes::rand_id("select_roc")
 )
 
 \method{tidy}{step_select_roc}(x, ...)

@@ -18,7 +18,7 @@ step_select_infgain(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_infgain")
+  id = recipes::rand_id("select_infgain")
 )
 
 \method{tidy}{step_select_infgain}(x, ...)

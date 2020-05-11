@@ -72,11 +72,11 @@ step_select_roc <- function(recipe,
                            top_p = NA,
                            exclude = NULL,
                            skip = FALSE,
-                           id = rand_id("select_roc")) {
-  add_step(
+                           id = recipes::rand_id("select_roc")) {
+  recipes::add_step(
     recipe,
     step_select_roc_new(
-      terms = ellipse_check(...),
+      terms = recipes::ellipse_check(...),
       outcome = outcome,
       role = role,
       trained = trained,
@@ -91,7 +91,7 @@ step_select_roc <- function(recipe,
 
 step_select_roc_new <-
   function(terms, outcome, role, trained, threshold, top_p, exclude, skip, id) {
-    step(
+    recipes::step(
       subclass = "select_roc",
       terms = terms,
       outcome = outcome,
@@ -126,17 +126,16 @@ roc_calc <- function(x, y) {
   res
 }
 
-
 #' @export
 prep.step_select_roc <- function(x, training, info = NULL, ...) {
-  y_name <- terms_select(x$outcome, info = info)
+  y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- x$outcome[1]
-  check_type(training[, y_name], quant = FALSE)
-  x_names <- terms_select(x$terms, info = info, empty_fun = I)
+  recipes::check_type(training[, y_name], quant = FALSE)
+  x_names <- recipes::terms_select(x$terms, info = info, empty_fun = I)
 
   if(length(x_names) > 0) {
 
-    check_type(training[, x_names])
+    recipes::check_type(training[, x_names])
 
     # check criteria
     check_criteria(x$top_p, x$threshold, match.call())
@@ -162,7 +161,6 @@ prep.step_select_roc <- function(x, training, info = NULL, ...) {
     id = x$id
   )
 }
-
 
 #' @export
 bake.step_select_roc <- function(object, new_data, ...) {
@@ -200,7 +198,6 @@ tidy.step_select_roc <- function(x, ...) {
 }
 
 #' @export
-#' @rdname tunable
 tunable.step_select_roc <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),

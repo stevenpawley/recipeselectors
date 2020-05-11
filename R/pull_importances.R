@@ -53,8 +53,10 @@ pull_importances <- function(object, scaled = TRUE, ...) {
   UseMethod("pull_importances", object)
 }
 
+
 rescale <- function(x)
   (x - min(x)) / (max(x) - min(x)) * 100
+
 
 #' @export
 pull_importances.default <- function(object, scaled = TRUE, ...) {
@@ -64,6 +66,7 @@ pull_importances.default <- function(object, scaled = TRUE, ...) {
   ))
 }
 
+
 #' @export
 pull_importances._xgb.Booster <-
   function(object,
@@ -71,8 +74,12 @@ pull_importances._xgb.Booster <-
            type = "Gain",
            ...) {
 
-    call <- call2(.fn = "xgb.importance", .ns = "xgboost", model = object$fit)
-    scores <- eval_tidy(call)
+    call <- rlang::call2(
+      .fn = "xgb.importance",
+      .ns = "xgboost",
+      model = object$fit
+    )
+    scores <- rlang::eval_tidy(call)
     scores <- tibble(feature = scores$Feature, importance = scores[[type]])
 
     if (scaled)
@@ -88,8 +95,8 @@ pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
   if (!length(others))
     others$metric = "usage"
 
-  call <- call2(.fn = "C5imp", .ns = "C50", object = object$fit,!!!others)
-  scores <- eval_tidy(call)
+  call <- rlang::call2(.fn = "C5imp", .ns = "C50", object = object$fit,!!!others)
+  scores <- rlang::eval_tidy(call)
 
   scores <- tibble(feature = rownames(scores), importance = scores$Overall)
 
@@ -102,7 +109,7 @@ pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
 #' @export
 pull_importances._H2OMultinomialModel <-
   function(object, scaled = TRUE, ...) {
-    call <- call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
+    call <- rlang::call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
     scores <- rlang::eval_tidy(call)
 
     scores <-
@@ -118,8 +125,8 @@ pull_importances._H2OMultinomialModel <-
 pull_importances._H2ORegressionModel <-
   function(object, scaled = TRUE, ...) {
 
-    call <- call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
-    scores <- eval_tidy(call)
+    call <- rlang::call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
+    scores <- rlang::eval_tidy(call)
 
     scores <-
       tibble(feature = scores$variable, importance = scores$relative_importance)
@@ -132,8 +139,8 @@ pull_importances._H2ORegressionModel <-
 
 #' @export
 pull_importances._ranger <- function(object, scaled = TRUE, ...) {
-  call <- call2(.fn = "importance", .ns = "ranger", x = object$fit)
-  scores <- eval_tidy(call)
+  call <- rlang::call2(.fn = "importance", .ns = "ranger", x = object$fit)
+  scores <- rlang::eval_tidy(call)
 
   scores <- tibble(feature = names(scores), importance = as.numeric(scores))
 
@@ -157,10 +164,8 @@ pull_importances._cubist <- function(object, scaled = TRUE, ...) {
 
 #' @export
 pull_importances._earth <- function(object, scaled = TRUE, ...) {
-  others <- list(...)
-
-  call <- call2(.fn = "evimp", .ns = "earth", object = object$fit)
-  scores <- eval_tidy(call)
+  call <- rlang::call2(.fn = "evimp", .ns = "earth", object = object$fit)
+  scores <- rlang::eval_tidy(call)
 
   scores <- tibble(feature = rownames(scores), importance = scores[, "rss"])
 
@@ -221,7 +226,7 @@ pull_importances._elnet <-
       penalty <- object$spec$args$penalty
 
     if (is.null(penalty))
-      abort(
+      rlang::abort(
         "model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method"
       )
 
@@ -251,7 +256,7 @@ pull_importances._lognet <-
     }
 
     if (is.null(s))
-      abort(
+      rlang::abort(
         "model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method"
       )
 

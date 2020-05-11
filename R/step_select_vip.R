@@ -40,7 +40,6 @@
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @return a `step_select_vip` object.
-#' @importFrom recipes add_step
 #' @export
 #' @examples
 #' library(recipes)
@@ -62,7 +61,8 @@
 #'
 #' juice(prepped)
 step_select_vip <- function(
-  recipe, ...,
+  recipe,
+  ...,
   outcome = NULL,
   role = "predictor",
   trained = FALSE,
@@ -72,15 +72,15 @@ step_select_vip <- function(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_vip")) {
+  id = recipes::rand_id("select_vip")) {
 
   if (missing(model))
     rlang::abort("Model argument should be a `parsnip` model specification")
 
-  add_step(
+  recipes::add_step(
     recipe,
     step_select_vip_new(
-      terms = ellipse_check(...),
+      terms = recipes::ellipse_check(...),
       trained = trained,
       outcome = outcome,
       role = role,
@@ -99,7 +99,7 @@ step_select_vip <- function(
 #' @importFrom recipes step
 step_select_vip_new <- function(terms, role, trained, outcome, model, top_p,
                                 threshold, exclude, scores, skip, id) {
-  step(
+  recipes::step(
     subclass = "select_vip",
     terms = terms,
     role = role,
@@ -115,21 +115,19 @@ step_select_vip_new <- function(terms, role, trained, outcome, model, top_p,
   )
 }
 
-#' @importFrom recipes terms_select check_type
-#' @importFrom parsnip set_engine set_mode fit_xy
 #' @export
 prep.step_select_vip <- function(x, training, info = NULL, ...) {
 
   # translate the terms arguments
-  x_names <- terms_select(terms = x$terms, info = info)
-  y_name <- terms_select(x$outcome, info = info)
+  x_names <- recipes::terms_select(terms = x$terms, info = info)
+  y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- y_name[1]
 
   # fit initial model
   X <- training[, x_names]
   y <- training[[y_name]]
 
-  initial_model <- fit_xy(x$model, X, y)
+  initial_model <- parsnip::fit_xy(x$model, X, y)
   res <- pull_importances(initial_model)
   names(res) <- c("variable", "score")
   res$score <- rlang::set_names(res$score, res$variable)
@@ -153,7 +151,6 @@ prep.step_select_vip <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @rdname bake
 bake.step_select_vip <- function(object, new_data, ...) {
   if (length(object$exclude) > 0) {
     new_data <- new_data[, !colnames(new_data) %in% object$exclude]
@@ -189,7 +186,6 @@ tidy.step_select_vip <- function(x, ...) {
 }
 
 #' @export
-#' @rdname tunable
 tunable.step_select_vip <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold"),

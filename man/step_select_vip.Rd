@@ -18,7 +18,7 @@ step_select_vip(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_vip")
+  id = recipes::rand_id("select_vip")
 )
 
 \method{tidy}{step_select_vip}(x, ...)

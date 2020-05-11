@@ -41,7 +41,6 @@
 #' @concept preprocessing
 #' @concept supervised_filter
 #' @export
-#' @importFrom recipes ellipse_check rand_id add_step recipes_pkg_check
 #' @details
 #'
 #' The recipe will stop if both `top_p` and `threshold` are left unspecified.
@@ -69,13 +68,13 @@ step_select_mrmr <- function(
   exclude = NULL,
   scores = NULL,
   skip = FALSE,
-  id = rand_id("select_mrmr")) {
+  id = recipes::rand_id("select_mrmr")) {
 
-  recipes_pkg_check("praznik")
+  recipes::recipes_pkg_check("praznik")
 
-  terms <- ellipse_check(...)
+  terms <- recipes::ellipse_check(...)
 
-  add_step(
+  recipes::add_step(
     recipe,
     step_select_mrmr_new(
       terms = terms,
@@ -93,12 +92,10 @@ step_select_mrmr <- function(
   )
 }
 
-# Wrapper around 'step' function that sets the class of new step objects
-#' @importFrom recipes step
 step_select_mrmr_new <- function(terms, role, trained, outcome, top_p,
                                  threshold, threads, exclude, scores, skip,
                                  id) {
-    step(
+    recipes::step(
       subclass = "select_mrmr",
       terms = terms,
       role = role,
@@ -115,13 +112,11 @@ step_select_mrmr_new <- function(terms, role, trained, outcome, top_p,
   }
 
 #' @export
-#' @importFrom recipes terms_select
-#' @importFrom rlang quo
 prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
   # extract response and predictor names
-  y_name <- terms_select(x$outcome, info = info)
+  y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- y_name[1]
-  x_names <- terms_select(terms = x$terms, info = info)
+  x_names <- recipes::terms_select(terms = x$terms, info = info)
 
   # check criteria
   check_criteria(x$top_p, x$threshold, match.call())
@@ -133,8 +128,8 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
     call <- rlang::call2(
       .fn = "MRMR",
       .ns = "praznik",
-      X = quo(training[, x_names]),
-      Y = quo(training[[y_name]]),
+      X = rlang::quo(training[, x_names]),
+      Y = rlang::quo(training[[y_name]]),
       k = length(x_names),
       threads = x$threads
     )
@@ -169,8 +164,6 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @export bake.step_select_mrmr
-#' @rdname bake
 bake.step_select_mrmr <- function(object, new_data, ...) {
   if (length(object$exclude) > 0) {
     new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
@@ -206,7 +199,6 @@ tidy.step_select_mrmr <- function(x, ...) {
 }
 
 #' @export
-#' @rdname tunable
 tunable.step_select_mrmr <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold"),
