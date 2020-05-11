@@ -38,11 +38,21 @@ coefficients. See below for details.
 
 Methods that are planned to be added:
 
-- Boruta feature selection
+- Boruta feature selection (Boruta package)
 
-- Carscore
+- Carscore (care package)
 
-- Relief-based methods
+- Relief-based methods (CORElearn package)
+
+- Ensemble feature selection (EFS package)
+
+Considering:
+
+- Decision tree feature selection (with tunable arguments)
+
+- Random forest feature selection (with tunable arguments)
+
+- Boosted trees feature selection (with tunable arguments)
 
 ## Notes on Wrapper Feature Selection Methods
 

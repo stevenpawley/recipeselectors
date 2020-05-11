@@ -19,6 +19,7 @@ Depends:
      R (>= 2.10),
      recipes
 Imports:
+    generics,
     tibble,
     parsnip,
     dials,

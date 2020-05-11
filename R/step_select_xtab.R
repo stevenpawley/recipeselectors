@@ -113,9 +113,9 @@ step_select_xtab_new <-
 tbl_calc <- function(x, y, exact) {
   xtab <- table(x, y)
   if (exact) {
-    res <- suppressWarnings(try(fisher.test(xtab)$p.value, silent = TRUE))
+    res <- suppressWarnings(try(stats::fisher.test(xtab)$p.value, silent = TRUE))
   } else {
-    res <- suppressWarnings(try(chisq.test(xtab)$p.value, silent = TRUE))
+    res <- suppressWarnings(try(stats::chisq.test(xtab)$p.value, silent = TRUE))
   }
   if (inherits(res, "try-error")) {
     res <- NA_real_
@@ -145,7 +145,7 @@ prep.step_select_xtab <- function(x, training, info = NULL, ...) {
                              ~ tbl_calc(.x, training[[y_name]], exact = x$exact))
     scores <- sort(scores, na.last = TRUE)
     if (x$fdr) {
-      scores <- p.adjust(scores, method = "BH")
+      scores <- stats::p.adjust(scores, method = "BH")
     }
 
     exclude_chr <- dual_filter(scores, x$top_p, x$threshold, maximize = FALSE)
@@ -204,7 +204,7 @@ tidy.step_select_xtab <- function(x, ...) {
 }
 
 #' @export
-#' @export tunable.step_select_xtab
+#' @rdname tunable
 tunable.step_select_xtab <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),
@@ -217,4 +217,3 @@ tunable.step_select_xtab <- function(x, ...) {
     component_id = x$id
   )
 }
-

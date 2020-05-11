@@ -199,10 +199,8 @@ tidy.step_select_roc <- function(x, ...) {
   res
 }
 
-
-
 #' @export
-#' @export tunable.step_select_roc
+#' @rdname tunable
 tunable.step_select_roc <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),
@@ -215,4 +213,3 @@ tunable.step_select_roc <- function(x, ...) {
     component_id = x$id
   )
 }
-

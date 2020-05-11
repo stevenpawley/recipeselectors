@@ -70,13 +70,10 @@ pull_importances._xgb.Booster <-
            scaled = TRUE,
            type = "Gain",
            ...) {
-    call <- rlang::call2(.fn = "xgb.importance",
-                         .ns = "xgboost",
-                         model = object$fit)
-    scores <- rlang::eval_tidy(call)
 
-    scores <- tibble::tibble(feature = scores$Feature,
-                             importance = scores[[type]])
+    call <- call2(.fn = "xgb.importance", .ns = "xgboost", model = object$fit)
+    scores <- eval_tidy(call)
+    scores <- tibble(feature = scores$Feature, importance = scores[[type]])
 
     if (scaled)
       scores$importance <- rescale(scores$importance)
@@ -91,14 +88,10 @@ pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
   if (!length(others))
     others$metric = "usage"
 
-  call <- rlang::call2(.fn = "C5imp",
-                       .ns = "C50",
-                       object = object$fit,!!!others)
+  call <- call2(.fn = "C5imp", .ns = "C50", object = object$fit,!!!others)
+  scores <- eval_tidy(call)
 
-  scores <- rlang::eval_tidy(call)
-
-  scores <- tibble::tibble(feature = rownames(scores),
-                           importance = scores$Overall)
+  scores <- tibble(feature = rownames(scores), importance = scores$Overall)
 
   if (scaled)
     scores$importance <- rescale(scores$importance)
@@ -109,14 +102,11 @@ pull_importances._C5.0 <- function(object, scaled = TRUE, ...) {
 #' @export
 pull_importances._H2OMultinomialModel <-
   function(object, scaled = TRUE, ...) {
-    call <- rlang::call2(.fn = "h2o.varimp",
-                         .ns = "h2o",
-                         object = object$fit)
-
+    call <- call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
     scores <- rlang::eval_tidy(call)
 
-    scores <- tibble::tibble(feature = scores$variable,
-                             importance = scores$relative_importance)
+    scores <-
+      tibble(feature = scores$variable, importance = scores$relative_importance)
 
     if (scaled)
       scores$importance <- rescale(scores$importance)
@@ -127,14 +117,12 @@ pull_importances._H2OMultinomialModel <-
 #' @export
 pull_importances._H2ORegressionModel <-
   function(object, scaled = TRUE, ...) {
-    call <- rlang::call2(.fn = "h2o.varimp",
-                         .ns = "h2o",
-                         object = object$fit)
 
-    scores <- rlang::eval_tidy(call)
+    call <- call2(.fn = "h2o.varimp", .ns = "h2o", object = object$fit)
+    scores <- eval_tidy(call)
 
-    scores <- tibble::tibble(feature = scores$variable,
-                             importance = scores$relative_importance)
+    scores <-
+      tibble(feature = scores$variable, importance = scores$relative_importance)
 
     if (scaled)
       scores$importance <- rescale(scores$importance)
@@ -144,14 +132,10 @@ pull_importances._H2ORegressionModel <-
 
 #' @export
 pull_importances._ranger <- function(object, scaled = TRUE, ...) {
-  call <- rlang::call2(.fn = "importance",
-                       .ns = "ranger",
-                       x = object$fit)
+  call <- call2(.fn = "importance", .ns = "ranger", x = object$fit)
+  scores <- eval_tidy(call)
 
-  scores <- rlang::eval_tidy(call)
-
-  scores <- tibble::tibble(feature = names(scores),
-                           importance = as.numeric(scores))
+  scores <- tibble(feature = names(scores), importance = as.numeric(scores))
 
   if (scaled)
     scores$importance <- rescale(scores$importance)
@@ -163,8 +147,7 @@ pull_importances._ranger <- function(object, scaled = TRUE, ...) {
 pull_importances._cubist <- function(object, scaled = TRUE, ...) {
   scores <- object$fit$usage
 
-  scores <- tibble::tibble(feature = scores$Variable,
-                           importance = scores$Model)
+  scores <- tibble(feature = scores$Variable, importance = scores$Model)
 
   if (scaled)
     scores$importance <- rescale(scores$importance)
@@ -176,16 +159,10 @@ pull_importances._cubist <- function(object, scaled = TRUE, ...) {
 pull_importances._earth <- function(object, scaled = TRUE, ...) {
   others <- list(...)
 
-  call <- rlang::call2(.fn = "evimp",
-                       .ns = "earth",
-                       object = object$fit)
+  call <- call2(.fn = "evimp", .ns = "earth", object = object$fit)
+  scores <- eval_tidy(call)
 
-  rlang::call_modify(call,!!!others)
-
-  scores <- rlang::eval_tidy(call)
-
-  scores <- tibble::tibble(feature = rownames(scores),
-                           importance = scores[, "rss"])
+  scores <- tibble(feature = rownames(scores), importance = scores[, "rss"])
 
   if (scaled)
     scores$importance <- rescale(scores$importance)
@@ -199,12 +176,13 @@ pull_importances._lm <-
            scaled = FALSE,
            intercept = FALSE,
            ...) {
-    others <- list(...)
 
-    scores <- tibble::tibble(feature = names(coefficients(object$fit)),
-                             importance = coefficients(object$fit))
+    scores <- tibble(
+      feature = names(stats::coefficients(object$fit)),
+      importance = stats::coefficients(object$fit)
+    )
 
-    if (isFALSE(intercept))
+    if (!intercept)
       scores <- scores[scores$feature != "(Intercept)",]
 
     if (scaled)
@@ -219,13 +197,12 @@ pull_importances._glm <-
            scaled = FALSE,
            intercept = FALSE,
            ...) {
-    others <- list(...)
 
-    scores <- tibble::tibble(feature = names(coefficients(object$fit)),
-                             importance = coefficients(object$fit))
+    scores <- tibble(feature = names(stats::coefficients(object$fit)),
+                     importance = stats::coefficients(object$fit))
 
-    if (isFALSE(intercept))
-      scores <- scores[scores$feature != "(Intercept)",]
+    if (!intercept)
+      scores <- scores[scores$feature != "(Intercept)", ]
 
     if (scaled)
       scores$importance <- rescale(abs(scores$importance))
@@ -244,15 +221,15 @@ pull_importances._elnet <-
       penalty <- object$spec$args$penalty
 
     if (is.null(penalty))
-      rlang::abort(
+      abort(
         "model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method"
       )
 
-    scores <- tibble::tibble(feature = rownames(coef(object$fit, s = penalty)),
-                             importance = coef(object$fit, s = penalty)[, 1])
+    scores <- tibble(feature = rownames(stats::coef(object$fit, s = penalty)),
+                     importance = stats::coef(object$fit, s = penalty)[, 1])
 
-    if (isFALSE(intercept))
-      scores <- scores[scores$feature != "(Intercept)",]
+    if (!intercept)
+      scores <- scores[scores$feature != "(Intercept)", ]
 
     if (scaled)
       scores$importance <- rescale(abs(scores$importance))
@@ -274,14 +251,16 @@ pull_importances._lognet <-
     }
 
     if (is.null(s))
-      rlang::abort(
+      abort(
         "model specification was not fitted using a `penalty` value. `penalty` should be supplied to the `pull_importances` method"
       )
 
-    scores <- tibble::tibble(feature = rownames(coef(object$fit, s = s)),
-                             importance = coef(object$fit, s = s)[, 1])
+    scores <- tibble(
+      feature = rownames(stats::coef(object$fit, s = s)),
+      importance = stats::coef(object$fit, s = s)[, 1]
+    )
 
-    if (isFALSE(intercept))
+    if (!intercept)
       scores <- scores[scores$feature != "(Intercept)",]
 
     if (scaled)
@@ -293,26 +272,26 @@ pull_importances._lognet <-
 #' @export
 pull_importances._randomForest <-
   function(object, scaled = TRUE, ...) {
-    scores <- tibble::tibble(
+    scores <- tibble(
       feature = rownames(object$fit$importance),
       importance = object$fit$importance
     )
 
     if (scaled)
-      scores$importance <- rescale(abs(scores$importance))
+      scores$importance <- rescale(scores$importance)
 
     scores
   }
 
 #' @export
 pull_importances._rpart <- function(object, scaled = TRUE, ...) {
-  scores <- tibble::tibble(
+  scores <- tibble(
     feature = names(object$fit$variable.importance),
     importance = object$fit$variable.importance
   )
 
   if (scaled)
-    scores$importance <- rescale(abs(scores$importance))
+    scores$importance <- rescale(scores$importance)
 
   scores
 }

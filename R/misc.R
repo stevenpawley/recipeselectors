@@ -1,28 +1,3 @@
-#' @export
-top_p <- function(range = c(1L, 4L), trans = NULL) {
-  dials::new_quant_param(
-    type = "integer",
-    range = range,
-    inclusive = c(TRUE, TRUE),
-    trans = trans,
-    label = c(top_p = "# Selected Predictors"),
-    finalize = dials::get_p
-  )
-}
-
-#' @export
-p_threshold <- function(range = c(-10, -0.001), trans = scales::log10_trans()) {
-  dials::new_quant_param(
-    type = "double",
-    range = range,
-    inclusive = c(TRUE, TRUE),
-    trans = trans,
-    default = -2,
-    label = c(p_threshold = "Threshold"),
-    finalize = NULL
-  )
-}
-
 check_zero_one <- function(x) {
   if (is.na(x)) {
     return(x)
@@ -105,7 +80,7 @@ select_percentile <- function(x, top_p, threshold, maximize) {
   x <- x[!is.na(x)]
 
   if (!is.na(threshold)) {
-    p_to_exceed <- quantile(x, threshold)
+    p_to_exceed <- stats::quantile(x, threshold)
 
     if (maximize) {
       removals <- x < p_to_exceed

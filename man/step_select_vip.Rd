@@ -80,21 +80,20 @@ subset of predictors based on the ranking of variable importance provided by
 a `parsnip` model specification and the `model` parameter
 }
 \examples{
-library(parsnip)
 library(recipes)
+library(parsnip)
 
 # load the example iris dataset
-data(iris)
+data(cells, package = "modeldata")
 
 # define a base model to use for feature importances
 base_model <- rand_forest(mode = "classification") \%>\%
     set_engine("ranger", importance = "permutation")
 
 # create a preprocessing recipe
-rec <- iris \%>\%
- recipe(Species ~ .) \%>\%
- step_select_vip(all_predictors(), model = base_model, top_p = 2,
-                 outcome = "Species")
+rec <-
+ recipe(class ~ ., data = cells[, -1]) \%>\%
+ step_select_vip(all_predictors(), model = base_model, top_p = 2, outcome = "class")
 
 prepped <- prep(rec)
 

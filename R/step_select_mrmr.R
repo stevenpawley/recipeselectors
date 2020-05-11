@@ -41,7 +41,7 @@
 #' @concept preprocessing
 #' @concept supervised_filter
 #' @export
-#' @importFrom recipes ellipse_check rand_id add_step
+#' @importFrom recipes ellipse_check rand_id add_step recipes_pkg_check
 #' @details
 #'
 #' The recipe will stop if both `top_p` and `threshold` are left unspecified.
@@ -71,8 +71,7 @@ step_select_mrmr <- function(
   skip = FALSE,
   id = rand_id("select_mrmr")) {
 
-  if (!"praznik" %in% installed.packages()[, 1])
-    stop("step_select_mrmr requires the package `praznik` to be installed")
+  recipes_pkg_check("praznik")
 
   terms <- ellipse_check(...)
 
@@ -117,6 +116,7 @@ step_select_mrmr_new <- function(terms, role, trained, outcome, top_p,
 
 #' @export
 #' @importFrom recipes terms_select
+#' @importFrom rlang quo
 prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
   # extract response and predictor names
   y_name <- terms_select(x$outcome, info = info)
@@ -170,6 +170,7 @@ prep.step_select_mrmr <- function(x, training, info = NULL, ...) {
 
 #' @export
 #' @export bake.step_select_mrmr
+#' @rdname bake
 bake.step_select_mrmr <- function(object, new_data, ...) {
   if (length(object$exclude) > 0) {
     new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
@@ -205,7 +206,7 @@ tidy.step_select_mrmr <- function(x, ...) {
 }
 
 #' @export
-#' @export tunable.step_select_mrmr
+#' @rdname tunable
 tunable.step_select_mrmr <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold"),

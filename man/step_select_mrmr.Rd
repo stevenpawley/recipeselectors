@@ -83,11 +83,11 @@ The recipe will stop if both `top_p` and `threshold` are left unspecified.
 \examples{
 library(recipes)
 
-data("iris")
+data(cells, package = "modeldata")
 
-rec <- iris \%>\%
-    recipe(Species ~.) \%>\%
-    step_select_mrmr(all_predictors(), outcome = "Species", top_p = 2)
+rec <-
+ recipe(class ~ ., data = cells[, -1]) \%>\%
+ step_select_mrmr(all_predictors(), outcome = "class", top_p = 2)
 
 prepped <- prep(rec)
 

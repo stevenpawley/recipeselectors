@@ -41,7 +41,7 @@
 #' @param id 	A character string that is unique to this step to identify it.
 #' @return A step_select_infgain object.
 #' @export
-#' @importFrom recipes ellipse_check rand_id add_step
+#' @importFrom recipes ellipse_check rand_id add_step recipes_pkg_check
 #' @keywords datagen
 #' @concept preprocessing
 #' @concept supervised_filter
@@ -76,8 +76,7 @@ step_select_infgain <- function(
   skip = FALSE,
   id = rand_id("select_infgain")) {
 
-  if (!"FSelectorRcpp" %in% installed.packages()[, 1])
-    stop("step_select_infgain requires the package `FSelectorRcpp` to be installed")
+  recipes_pkg_check("FSelectorRcpp")
 
   terms <- ellipse_check(...)
 
@@ -126,6 +125,8 @@ step_select_infgain_new <- function(terms, role, trained, outcome, top_p,
 
 #' @export
 #' @importFrom recipes terms_select
+#' @importFrom stats as.formula
+#' @importFrom rlang quo
 prep.step_select_infgain <- function(x, training, info = NULL, ...) {
   # extract response and predictor names
   x_names <- terms_select(terms = x$terms, info = info)
@@ -184,7 +185,7 @@ prep.step_select_infgain <- function(x, training, info = NULL, ...) {
 }
 
 #' @export
-#' @importFrom recipes bake
+#' @rdname bake
 bake.step_select_infgain <- function(object, new_data, ...) {
   if (length(object$exclude > 0)) {
     new_data <- new_data[, !(colnames(new_data) %in% object$exclude)]
@@ -220,7 +221,7 @@ tidy.step_select_infgain <- function(x, ...) {
 }
 
 #' @export
-#' @export tunable.step_select_mrmr
+#' @rdname tunable
 tunable.step_select_infgain <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),

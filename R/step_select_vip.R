@@ -152,8 +152,8 @@ prep.step_select_vip <- function(x, training, info = NULL, ...) {
   )
 }
 
-#' @importFrom tibble as_tibble
 #' @export
+#' @rdname bake
 bake.step_select_vip <- function(object, new_data, ...) {
   if (length(object$exclude) > 0) {
     new_data <- new_data[, !colnames(new_data) %in% object$exclude]
@@ -189,13 +189,13 @@ tidy.step_select_vip <- function(x, ...) {
 }
 
 #' @export
-#' @export tunable.step_select_vip
+#' @rdname tunable
 tunable.step_select_vip <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold"),
     call_info = list(
       list(pkg = "recipeselectors", fun = "top_p"),
-      list(pkg = "dials", fun = "threshold", range = c(0, 1))
+      list(pkg = "recipeselectors", fun = "threshold", range = c(0, 1))
     ),
     source = "recipe",
     component = "step_select_vip",
