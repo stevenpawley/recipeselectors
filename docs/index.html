@@ -88,6 +88,7 @@
 <li><p><code>step_select_xtab</code> provides feature selection using statistical association (also thanks to Max Kuhn).</p></li>
 <li><p><code>step_select_vip</code> provides model-based selection using feature importance scores or coefficients. This method allows a <code>parsnip</code> model specification to be used to select a subset of features based on the models’ feature importances or coefficients. See below for details.</p></li>
 <li><p><code>step_select_boruta</code> provides a Boruta feature selection step.</p></li>
+<li><p><code>step_select_carscore</code> provides a CAR score feature selection step for regression models. This step requires the <code>care</code> package to be installed.</p></li>
 </ul>
 </div>
 <div id="under-development" class="section level2">
@@ -95,7 +96,6 @@
 <a href="#under-development" class="anchor"></a>Under Development</h2>
 <p>Methods that are planned to be added:</p>
 <ul>
-<li><p>Carscore (care package)</p></li>
 <li><p>Relief-based methods (CORElearn package)</p></li>
 <li><p>Ensemble feature selection (EFS package)</p></li>
 </ul>

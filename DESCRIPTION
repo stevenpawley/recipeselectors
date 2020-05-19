@@ -39,5 +39,6 @@ Suggests:
     praznik,
     ranger,
     Boruta,
+    care,
     modeldata,
     covr

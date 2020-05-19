@@ -36,11 +36,11 @@ coefficients. See below for details.
 
 - `step_select_boruta` provides a Boruta feature selection step.
 
+- `step_select_carscore` provides a CAR score feature selection step for regression models. This step requires the `care` package to be installed.
+
 ## Under Development
 
 Methods that are planned to be added:
-
-- Carscore (care package)
 
 - Relief-based methods (CORElearn package)
 
