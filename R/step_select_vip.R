@@ -55,11 +55,12 @@
 #' # create a preprocessing recipe
 #' rec <-
 #'  recipe(class ~ ., data = cells[, -1]) %>%
-#'  step_select_vip(all_predictors(), model = base_model, top_p = 2, outcome = "class")
+#'  step_select_vip(all_predictors(), outcome = "class", model = base_model, top_p = 10, threshold = 0.9)
 #'
 #' prepped <- prep(rec)
 #'
-#' juice(prepped)
+#' preproc_data <- juice(prepped)
+#' prepped
 step_select_vip <- function(
   recipe,
   ...,
@@ -123,17 +124,27 @@ prep.step_select_vip <- function(x, training, info = NULL, ...) {
   y_name <- recipes::terms_select(x$outcome, info = info)
   y_name <- y_name[1]
 
-  # fit initial model
-  X <- training[, x_names]
-  y <- training[[y_name]]
+  # check criteria
+  check_criteria(x$top_p, x$threshold, match.call())
+  check_zero_one(x$threshold)
+  x$top_p <- check_top_p(x$top_p, length(x_names))
 
-  initial_model <- parsnip::fit_xy(x$model, X, y)
-  res <- pull_importances(initial_model)
-  names(res) <- c("variable", "score")
-  res$score <- rlang::set_names(res$score, res$variable)
+  if (length(x_names) > 0) {
+    # fit initial model
+    X <- training[, x_names]
+    y <- training[[y_name]]
 
-  exclude <-
-    select_percentile(res$score, x$top_p, x$threshold, maximize = TRUE)
+    initial_model <- parsnip::fit_xy(x$model, X, y)
+    res <- pull_importances(initial_model)
+    names(res) <- c("variable", "score")
+    res$score <- rlang::set_names(res$score, res$variable)
+
+    exclude <-
+      select_percentile(res$score, x$top_p, x$threshold, maximize = TRUE)
+
+  } else {
+    exclude <- character()
+  }
 
   step_select_vip_new(
     terms = x$terms,
@@ -191,7 +202,7 @@ tunable.step_select_vip <- function(x, ...) {
     name = c("top_p", "threshold"),
     call_info = list(
       list(pkg = "recipeselectors", fun = "top_p"),
-      list(pkg = "recipeselectors", fun = "threshold", range = c(0, 1))
+      list(pkg = "dials", fun = "threshold", range = c(0, 1))
     ),
     source = "recipe",
     component = "step_select_vip",

@@ -239,11 +239,24 @@ TRUE as it may affect the computations for subsequent operations.</p></td>
 
 <span class='no'>rec</span> <span class='kw'>&lt;-</span>
  <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/recipe.html'>recipe</a></span>(<span class='no'>class</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>cells</span>[, -<span class='fl'>1</span>]) <span class='kw'>%&gt;%</span>
- <span class='fu'>step_select_infgain</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"class"</span>, <span class='kw'>top_p</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+ <span class='fu'>step_select_infgain</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"class"</span>, <span class='kw'>top_p</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.9</span>)
 
 <span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)
 
-<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)</div></pre>
+<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)
+<span class='no'>prepped</span></div><div class='output co'>#&gt; Data Recipe
+#&gt; 
+#&gt; Inputs:
+#&gt; 
+#&gt;       role #variables
+#&gt;    outcome          1
+#&gt;  predictor         56
+#&gt; 
+#&gt; Training data contained 2019 data points and no missing data.
+#&gt; 
+#&gt; Operations:
+#&gt; 
+#&gt; Information Gain feature selection (50 excluded)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

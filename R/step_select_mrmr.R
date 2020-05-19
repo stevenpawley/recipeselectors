@@ -52,11 +52,12 @@
 #'
 #' rec <-
 #'  recipe(class ~ ., data = cells[, -1]) %>%
-#'  step_select_mrmr(all_predictors(), outcome = "class", top_p = 2)
+#'  step_select_mrmr(all_predictors(), outcome = "class", top_p = 10, threshold = 0.9)
 #'
 #' prepped <- prep(rec)
 #'
 #' new_data <- juice(prepped)
+#' prepped
 step_select_mrmr <- function(
   recipe, ...,
   outcome = NULL,

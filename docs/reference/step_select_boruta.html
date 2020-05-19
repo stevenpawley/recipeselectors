@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Apply minimum Redundancy Maximum Relevance Feature Selection (mRMR) — step_select_mrmr • recipeselectors</title>
+<title>Feature selection step using Boruta — step_select_boruta • recipeselectors</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,9 @@
 
 
 
-<meta property="og:title" content="Apply minimum Redundancy Maximum Relevance Feature Selection (mRMR) — step_select_mrmr" />
-<meta property="og:description" content="`step_select_mrmr` creates a *specification* of a recipe step that will apply
-minimum Redundancy Maximum Relevance Feature Selection (mRMR) to numeric
-data. The top `top_p` scoring features, or features whose scores occur in
-the top percentile `threshold` will be retained as new predictors." />
+<meta property="og:title" content="Feature selection step using Boruta — step_select_boruta" />
+<meta property="og:description" content="`step_select_boruta` creates a *specification* of a recipe step that selects a
+subset of predictors using the Boruta feature selection approach." />
 
 
 
@@ -111,34 +109,30 @@ the top percentile `threshold` will be retained as new predictors." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Apply minimum Redundancy Maximum Relevance Feature Selection (mRMR)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/stevenpawley/recipeselectors/blob/master/R/step_select_mrmr.R'><code>R/step_select_mrmr.R</code></a></small>
-    <div class="hidden name"><code>step_select_mrmr.Rd</code></div>
+    <h1>Feature selection step using Boruta</h1>
+    <small class="dont-index">Source: <a href='https://github.com/stevenpawley/recipeselectors/blob/master/R/step_select_boruta.R'><code>R/step_select_boruta.R</code></a></small>
+    <div class="hidden name"><code>step_select_boruta.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>`step_select_mrmr` creates a *specification* of a recipe step that will apply
-minimum Redundancy Maximum Relevance Feature Selection (mRMR) to numeric
-data. The top `top_p` scoring features, or features whose scores occur in
-the top percentile `threshold` will be retained as new predictors.</p>
+    <p>`step_select_boruta` creates a *specification* of a recipe step that selects a
+subset of predictors using the Boruta feature selection approach.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>step_select_mrmr</span>(
+    <pre class="usage"><span class='fu'>step_select_boruta</span>(
   <span class='no'>recipe</span>,
   <span class='no'>...</span>,
   <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>role</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>role</span> <span class='kw'>=</span> <span class='st'>"predictor"</span>,
   <span class='kw'>trained</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>top_p</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>threads</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>exclude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>scores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>pValue</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>mcAdj</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>maxRuns</span> <span class='kw'>=</span> <span class='fl'>100</span>),
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>skip</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw pkg'>recipes</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/recipes/man/rand_id.html'>rand_id</a></span>(<span class='st'>"select_mrmr"</span>)
+  <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw pkg'>recipes</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/recipes/man/rand_id.html'>rand_id</a></span>(<span class='st'>"select_boruta"</span>)
 )
 
-<span class='co'># S3 method for step_select_mrmr</span>
+<span class='co'># S3 method for step_select_boruta</span>
 <span class='fu'>tidy</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -147,45 +141,27 @@ the top percentile `threshold` will be retained as new predictors.</p>
     <tr>
       <th>recipe</th>
       <td><p>A recipe object. The step will be added to the sequence of
-operations for this recipe</p></td>
+operations for this recipe.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>One or more selector functions to choose which variables are
 affected by the step. See selections() for more details. For the tidy
-method, these are not currently used</p></td>
+method, these are not currently used.</p></td>
     </tr>
     <tr>
       <th>outcome</th>
-      <td><p>A character string specifying the name of response variable
-used to evaluate mRMR.</p></td>
+      <td><p>A character string with the name of the response variable to
+use to calculate the feature importance scores.</p></td>
     </tr>
     <tr>
       <th>role</th>
-      <td><p>Not used by this step since no new variables are created</p></td>
+      <td><p>Not used by this step since no new variables are created.</p></td>
     </tr>
     <tr>
       <th>trained</th>
       <td><p>A logical to indicate if the quantities for preprocessing have
-been estimated</p></td>
-    </tr>
-    <tr>
-      <th>top_p</th>
-      <td><p>An integer that will be used to select the number of best
-scoring features.</p></td>
-    </tr>
-    <tr>
-      <th>threshold</th>
-      <td><p>A numeric value between 0 and 1 representing the percentile
-of best scoring features to select. Features with scores that are _larger_
-than the specified threshold will be retained, for example `threshold =
-0.9` will retain only predictors with scores in the top 90th percentile.
-Note that this overrides `top_p`.</p></td>
-    </tr>
-    <tr>
-      <th>threads</th>
-      <td><p>An integer specifying the number of threads to use for
-processing. The default = 0 uses all available threads.</p></td>
+been estimated.</p></td>
     </tr>
     <tr>
       <th>exclude</th>
@@ -194,10 +170,14 @@ from the data. This will be set when `prep()` is used on the recipe and
 should not be set by the user.</p></td>
     </tr>
     <tr>
-      <th>scores</th>
-      <td><p>A tibble with 'variable' and 'scores' columns containing the
-names of the variables and their mRMR scores. This parameter is only
-produced after the recipe has been trained.</p></td>
+      <th>options</th>
+      <td><p>A list of options to pass to `Boruta::Boruta()`. The defaults
+use Boruta's defaults. *Note* that `x` and `y` should not be passed here.</p></td>
+    </tr>
+    <tr>
+      <th>res</th>
+      <td><p>The `Boruta::Boruta` object is stored here once this preprocessing
+step has been trained by `prep.recipe()`.</p></td>
     </tr>
     <tr>
       <th>skip</th>
@@ -213,29 +193,29 @@ TRUE as it may affect the computations for subsequent operations.</p></td>
     </tr>
     <tr>
       <th>x</th>
-      <td><p>A `step_select_mrmr` object.</p></td>
+      <td><p>A `step_select_boruta` object.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A step_select_mrmr object.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The recipe will stop if both `top_p` and `threshold` are left unspecified.</p>
+    <p>a `step_select_boruta` object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>recipes</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>parsnip</span>)
 
+<span class='co'># load the example iris dataset</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cells</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"modeldata"</span>)
 
+<span class='co'># create a preprocessing recipe</span>
 <span class='no'>rec</span> <span class='kw'>&lt;-</span>
  <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/recipe.html'>recipe</a></span>(<span class='no'>class</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>cells</span>[, -<span class='fl'>1</span>]) <span class='kw'>%&gt;%</span>
- <span class='fu'>step_select_mrmr</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"class"</span>, <span class='kw'>top_p</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.9</span>)
+ <span class='fu'>step_select_boruta</span>(<span class='fu'><a href='https://rdrr.io/pkg/recipes/man/has_role.html'>all_predictors</a></span>(), <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"class"</span>)
 
 <span class='no'>prepped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/prep.html'>prep</a></span>(<span class='no'>rec</span>)
 
-<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)
+<span class='no'>preproc_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/recipes/man/juice.html'>juice</a></span>(<span class='no'>prepped</span>)
 <span class='no'>prepped</span></div><div class='output co'>#&gt; Data Recipe
 #&gt; 
 #&gt; Inputs:
@@ -248,7 +228,7 @@ TRUE as it may affect the computations for subsequent operations.</p></td>
 #&gt; 
 #&gt; Operations:
 #&gt; 
-#&gt; mRMR feature selection (50 excluded)</div></pre>
+#&gt; Boruta feature selection (5 excluded)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

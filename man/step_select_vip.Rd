@@ -93,9 +93,10 @@ base_model <- rand_forest(mode = "classification") \%>\%
 # create a preprocessing recipe
 rec <-
  recipe(class ~ ., data = cells[, -1]) \%>\%
- step_select_vip(all_predictors(), model = base_model, top_p = 2, outcome = "class")
+ step_select_vip(all_predictors(), outcome = "class", model = base_model, top_p = 10, threshold = 0.9)
 
 prepped <- prep(rec)
 
-juice(prepped)
+preproc_data <- juice(prepped)
+prepped
 }

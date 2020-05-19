@@ -38,5 +38,6 @@ Suggests:
     FSelectorRcpp,
     praznik,
     ranger,
+    Boruta,
     modeldata,
     covr

@@ -34,11 +34,11 @@ scores or coefficients. This method allows a `parsnip` model specification to be
 used to select a subset of features based on the models' feature importances or
 coefficients. See below for details.
 
+- `step_select_boruta` provides a Boruta feature selection step.
+
 ## Under Development
 
 Methods that are planned to be added:
-
-- Boruta feature selection (Boruta package)
 
 - Carscore (care package)
 

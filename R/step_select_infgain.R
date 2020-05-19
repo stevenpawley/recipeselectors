@@ -56,11 +56,12 @@
 #'
 #' rec <-
 #'  recipe(class ~ ., data = cells[, -1]) %>%
-#'  step_select_infgain(all_predictors(), outcome = "class", top_p = 2)
+#'  step_select_infgain(all_predictors(), outcome = "class", top_p = 10, threshold = 0.9)
 #'
 #' prepped <- prep(rec)
 #'
 #' new_data <- juice(prepped)
+#' prepped
 step_select_infgain <- function(
   recipe, ...,
   outcome = NULL,
