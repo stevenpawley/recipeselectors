@@ -39,7 +39,14 @@ most commonly used for feature selection such as `step_select_forests`,
 
 - `step_select_boruta` provides a Boruta feature selection step.
 
-- `step_select_carscore` provides a CAR score feature selection step for regression models. This step requires the `care` package to be installed.
+- `step_select_carscore` provides a CAR score feature selection step for
+regression models. This step requires the `care` package to be installed.
+
+- `step_select_forests`, `step_select_tree`, and `step_select_linear` provide
+model-based methods of selecting a subset of features based on the model's
+feature importance scores or coefficients. These steps, and potential
+`step_select_rules`, `step_select_boost` will replace the `step_select_vip`
+method.
 
 ## Under Development
 

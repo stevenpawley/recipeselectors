@@ -96,12 +96,22 @@ statistical association (also thanks to Max Kuhn).</p></li>
 feature importance scores or coefficients. This method allows a
 <code>parsnip</code> model specification to be used to select a subset
 of features based on the models’ feature importances or coefficients.
-See below for details.</p></li>
+See below for details. Note, that this step will eventually be
+deprecated in favor of separate steps that contain the specific models
+that are most commonly used for feature selection such as
+<code>step_select_forests</code>, <code>step_select_tree</code> and
+<code>step_select_linear</code>.</p></li>
 <li><p><code>step_select_boruta</code> provides a Boruta feature
 selection step.</p></li>
 <li><p><code>step_select_carscore</code> provides a CAR score feature
 selection step for regression models. This step requires the
 <code>care</code> package to be installed.</p></li>
+<li><p><code>step_select_forests</code>, <code>step_select_tree</code>,
+and <code>step_select_linear</code> provide model-based methods of
+selecting a subset of features based on the model’s feature importance
+scores or coefficients. These steps, and potential
+<code>step_select_rules</code>, <code>step_select_boost</code> will
+replace the <code>step_select_vip</code> method.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -111,12 +121,6 @@ selection step for regression models. This step requires the
 <ul>
 <li><p>Relief-based methods (CORElearn package)</p></li>
 <li><p>Ensemble feature selection (EFS package)</p></li>
-</ul>
-<p>Considering:</p>
-<ul>
-<li><p>Decision tree feature selection (with tunable arguments)</p></li>
-<li><p>Random forest feature selection (with tunable arguments)</p></li>
-<li><p>Boosted trees feature selection (with tunable arguments)</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -133,9 +137,9 @@ feature importance scores or coefficients, with one score per feature.
 The base model is specified in the step using the <code>model</code>
 parameter.</p>
 <p>A limitation is that the model used in the
-<code>step_select_vip</code> cannot be tuned. This step is likely to be
-superceded in the future with a more appropriate structure that allows
-both variable selection and tuning.</p>
+<code>step_select_vip</code> cannot be tuned. This step will be replaced
+by a more appropriate structure that allows both variable selection and
+tuning for specific model types.</p>
 <p>The parsnip package does not currently contain a method of pulling
 feature importance scores from models that support them. The
 <code>recipeselectors</code> package provides a generic function
