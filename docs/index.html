@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,26 +34,20 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">recipeselectors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/stevenpawley/recipeselectors/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/stevenpawley/recipeselectors/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -67,33 +63,50 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="recipeselectors" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#recipeselectors" class="anchor"></a>recipeselectors</h1></div>
-<p>The goal of recipeselectors is to provide extra supervised feature selection steps to be used with the tidymodels recipes package.</p>
+<div class="section level1">
+<div class="page-header"><h1 id="recipeselectors">recipeselectors<a class="anchor" aria-label="anchor" href="#recipeselectors"></a>
+</h1></div>
+<p>The goal of recipeselectors is to provide extra supervised feature
+selection steps to be used with the tidymodels recipes package.</p>
 <p>The package is under development.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"stevenpawley/recipeselectors"</span>)</pre></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stevenpawley/recipeselectors"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="feature-selection-methods" class="section level2">
-<h2 class="hasAnchor">
-<a href="#feature-selection-methods" class="anchor"></a>Feature Selection Methods</h2>
+<div class="section level2">
+<h2 id="feature-selection-methods">Feature Selection Methods<a class="anchor" aria-label="anchor" href="#feature-selection-methods"></a>
+</h2>
 <p>The following feature selection methods are implemented:</p>
 <ul>
-<li><p><code>step_select_infgain</code> provides Information Gain feature selection. This step requires the <code>FSelectorRcpp</code> package to be installed.</p></li>
-<li><p><code>step_select_mrmr</code> provides maximum Relevancy Minimum Redundancy feature selection. This step requires the <code>praznik</code> package to be installed.</p></li>
-<li><p><code>step_select_roc</code> provides ROC-based feature selection based on each predictors’ relationship with the response outcomeas measured using a Receiver Operating Characteristic curve. Thanks to Max Kuhn, along with many other useful suggestions.</p></li>
-<li><p><code>step_select_xtab</code> provides feature selection using statistical association (also thanks to Max Kuhn).</p></li>
-<li><p><code>step_select_vip</code> provides model-based selection using feature importance scores or coefficients. This method allows a <code>parsnip</code> model specification to be used to select a subset of features based on the models’ feature importances or coefficients. See below for details.</p></li>
-<li><p><code>step_select_boruta</code> provides a Boruta feature selection step.</p></li>
-<li><p><code>step_select_carscore</code> provides a CAR score feature selection step for regression models. This step requires the <code>care</code> package to be installed.</p></li>
+<li><p><code>step_select_infgain</code> provides Information Gain
+feature selection. This step requires the <code>FSelectorRcpp</code>
+package to be installed.</p></li>
+<li><p><code>step_select_mrmr</code> provides maximum Relevancy Minimum
+Redundancy feature selection. This step requires the
+<code>praznik</code> package to be installed.</p></li>
+<li><p><code>step_select_roc</code> provides ROC-based feature selection
+based on each predictors’ relationship with the response outcomeas
+measured using a Receiver Operating Characteristic curve. Thanks to Max
+Kuhn, along with many other useful suggestions.</p></li>
+<li><p><code>step_select_xtab</code> provides feature selection using
+statistical association (also thanks to Max Kuhn).</p></li>
+<li><p><code>step_select_vip</code> provides model-based selection using
+feature importance scores or coefficients. This method allows a
+<code>parsnip</code> model specification to be used to select a subset
+of features based on the models’ feature importances or coefficients.
+See below for details.</p></li>
+<li><p><code>step_select_boruta</code> provides a Boruta feature
+selection step.</p></li>
+<li><p><code>step_select_carscore</code> provides a CAR score feature
+selection step for regression models. This step requires the
+<code>care</code> package to be installed.</p></li>
 </ul>
 </div>
-<div id="under-development" class="section level2">
-<h2 class="hasAnchor">
-<a href="#under-development" class="anchor"></a>Under Development</h2>
+<div class="section level2">
+<h2 id="under-development">Under Development<a class="anchor" aria-label="anchor" href="#under-development"></a>
+</h2>
 <p>Methods that are planned to be added:</p>
 <ul>
 <li><p>Relief-based methods (CORElearn package)</p></li>
@@ -106,99 +119,135 @@
 <li><p>Boosted trees feature selection (with tunable arguments)</p></li>
 </ul>
 </div>
-<div id="notes-on-wrapper-feature-selection-methods" class="section level2">
-<h2 class="hasAnchor">
-<a href="#notes-on-wrapper-feature-selection-methods" class="anchor"></a>Notes on Wrapper Feature Selection Methods</h2>
-<p>The focus of <code>recipeselectors</code> is to provide extra recipes for filter-based feature selection. A single wrapper method is also included using the variable importance scores of selected algorithms for feature selection.</p>
-<p>The <code>step_select_vip</code> is designed to work with the <code>parsnip</code> package and requires a base model specification that provides a method of ranking the importance of features, such as feature importance scores or coefficients, with one score per feature. The base model is specified in the step using the <code>model</code> parameter.</p>
-<p>A limitation is that the model used in the <code>step_select_vip</code> cannot be tuned. This step is likely to be superceded in the future with a more appropriate structure that allows both variable selection and tuning.</p>
-<p>The parsnip package does not currently contain a method of pulling feature importance scores from models that support them. The <code>recipeselectors</code> package provides a generic function <code>pull_importances</code> for this purpose that accepts a fitted parsnip model, and returns a tibble with two columns ‘feature’ and ‘importance’:</p>
-<pre><code>model &lt;- boost_tree(mode = "classification") %&gt;%
-  set_engine("xgboost")
+<div class="section level2">
+<h2 id="notes-on-wrapper-feature-selection-methods">Notes on Wrapper Feature Selection Methods<a class="anchor" aria-label="anchor" href="#notes-on-wrapper-feature-selection-methods"></a>
+</h2>
+<p>The focus of <code>recipeselectors</code> is to provide extra recipes
+for filter-based feature selection. A single wrapper method is also
+included using the variable importance scores of selected algorithms for
+feature selection.</p>
+<p>The <code>step_select_vip</code> is designed to work with the
+<code>parsnip</code> package and requires a base model specification
+that provides a method of ranking the importance of features, such as
+feature importance scores or coefficients, with one score per feature.
+The base model is specified in the step using the <code>model</code>
+parameter.</p>
+<p>A limitation is that the model used in the
+<code>step_select_vip</code> cannot be tuned. This step is likely to be
+superceded in the future with a more appropriate structure that allows
+both variable selection and tuning.</p>
+<p>The parsnip package does not currently contain a method of pulling
+feature importance scores from models that support them. The
+<code>recipeselectors</code> package provides a generic function
+<code>pull_importances</code> for this purpose that accepts a fitted
+parsnip model, and returns a tibble with two columns ‘feature’ and
+‘importance’:</p>
+<pre><code><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">boost_tree</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"classification"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu">set_engine</span><span class="op">(</span><span class="st">"xgboost"</span><span class="op">)</span>
 
-model_fit &lt;- model %&gt;% 
-  fit(Species ~., iris)
+<span class="va">model_fit</span> <span class="op">&lt;-</span> <span class="va">model</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">fit</span><span class="op">(</span><span class="va">Species</span> <span class="op">~</span><span class="va">.</span>, <span class="va">iris</span><span class="op">)</span>
 
-pull_importances(model_fit)</code></pre>
-<p>Most of the models and ‘engines’ that provide feature importances are implemented. In addition, <code>h2o</code> models are supported using the <code>h2oparsnip</code> package. Use <code><a href="https://rdrr.io/r/utils/methods.html">methods(pull_importances)</a></code> to list models that are currently implemented. If need to pull the feature importance scores from a model that is not currently supported in this package, then you can add a class to the pull_importances generic function which returns a two-column tibble:</p>
-<pre><code>pull_importances._ranger &lt;- function(object, scaled = FALSE, ...) {
-  scores &lt;- ranger::importance(object$fit)
+<span class="fu"><a href="reference/pull_importances.html">pull_importances</a></span><span class="op">(</span><span class="va">model_fit</span><span class="op">)</span></code></pre>
+<p>Most of the models and ‘engines’ that provide feature importances are
+implemented. In addition, <code>h2o</code> models are supported using
+the <code>h2oparsnip</code> package. Use
+<code>methods(pull_importances)</code> to list models that are currently
+implemented. If need to pull the feature importance scores from a model
+that is not currently supported in this package, then you can add a
+class to the pull_importances generic function which returns a
+two-column tibble:</p>
+<pre><code><span class="va">pull_importances._ranger</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">scaled</span> <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu">ranger</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ranger/man/importance.ranger.html" class="external-link">importance</a></span><span class="op">(</span><span class="va">object</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span>
 
-  # create a tibble with 'feature' and 'importance' columns
-  scores &lt;- tibble::tibble(
-    feature = names(scores),
-    importance = as.numeric(scores)
-  )
+  <span class="co"># create a tibble with 'feature' and 'importance' columns</span>
+  <span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>
+    feature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scores</span><span class="op">)</span>,
+    importance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">scores</span><span class="op">)</span>
+  <span class="op">)</span>
 
-  # optionally rescale the importance scores
-  if (scaled)
-    scores$importance &lt;- scales::rescale(scores$importance)
-  scores
-}</code></pre>
+  <span class="co"># optionally rescale the importance scores</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">scaled</span><span class="op">)</span>
+    <span class="va">scores</span><span class="op">$</span><span class="va">importance</span> <span class="op">&lt;-</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span><span class="va">scores</span><span class="op">$</span><span class="va">importance</span><span class="op">)</span>
+  <span class="va">scores</span>
+<span class="op">}</span></code></pre>
 <p>An example of using the step_importance function:</p>
-<pre><code><a href="https://parsnip.tidymodels.org/reference">library(parsnip)
-library(recipes)
-library(magrittr)
+<pre><code><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/parsnip" class="external-link">parsnip</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/recipes" class="external-link">recipes</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
 
-# load the example iris dataset
-data(iris)
+<span class="co"># load the example iris dataset</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span>
 
-# define a base model to use for feature importances
-base_model &lt;- rand_forest(mode = "classification") %&gt;%
-  set_engine("ranger", importance = "permutation")
+<span class="co"># define a base model to use for feature importances</span>
+<span class="va">base_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://parsnip.tidymodels.org/reference/rand_forest.html" class="external-link">rand_forest</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"classification"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://parsnip.tidymodels.org/reference/set_engine.html" class="external-link">set_engine</a></span><span class="op">(</span><span class="st">"ranger"</span>, importance <span class="op">=</span> <span class="st">"permutation"</span><span class="op">)</span>
 
-# create a preprocessing recipe
-rec &lt;- iris %&gt;%
-recipe(Species ~ .) %&gt;%
-step_select_vip(all_predictors(), model = base_model, top_p = 2,
-                outcome = "Species")
+<span class="co"># create a preprocessing recipe</span>
+<span class="va">rec</span> <span class="op">&lt;-</span> <span class="va">iris</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+<span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">Species</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+<span class="fu"><a href="reference/step_select_vip.html">step_select_vip</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_predictors</a></span><span class="op">(</span><span class="op">)</span>, model <span class="op">=</span> <span class="va">base_model</span>, top_p <span class="op">=</span> <span class="fl">2</span>,
+                outcome <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span>
 
-prepped &lt;- prep(rec)
+<span class="va">prepped</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://recipes.tidymodels.org/reference/prep.html" class="external-link">prep</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span>
 
-# create a model specification
-clf &lt;- decision_tree(mode = "classification") %&gt;%
-set_engine("rpart")
+<span class="co"># create a model specification</span>
+<span class="va">clf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://parsnip.tidymodels.org/reference/decision_tree.html" class="external-link">decision_tree</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"classification"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+<span class="fu"><a href="https://parsnip.tidymodels.org/reference/set_engine.html" class="external-link">set_engine</a></span><span class="op">(</span><span class="st">"rpart"</span><span class="op">)</span>
 
-clf_fitted &lt;- clf %&gt;%
-  fit(Species ~ ., juice(prepped))</a></code></pre>
+<span class="va">clf_fitted</span> <span class="op">&lt;-</span> <span class="va">clf</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://generics.r-lib.org/reference/fit.html" class="external-link">fit</a></span><span class="op">(</span><span class="va">Species</span> <span class="op">~</span> <span class="va">.</span>, <span class="fu"><a href="https://recipes.tidymodels.org/reference/juice.html" class="external-link">juice</a></span><span class="op">(</span><span class="va">prepped</span><span class="op">)</span><span class="op">)</span></code></pre>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/stevenpawley/recipeselectors/">https://​github.com/​stevenpawley/​recipeselectors/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/stevenpawley/recipeselectors/issues">https://​github.com/​stevenpawley/​recipeselectors/​issues</a>
-</li>
+<li><a href="https://github.com/stevenpawley/recipeselectors/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/stevenpawley/recipeselectors/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing recipeselectors</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Steven Pawley <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Steven Pawley.</p>
+  <p></p>
+<p>Developed by Steven Pawley.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -206,6 +255,8 @@ clf_fitted &lt;- clf %&gt;%
 
   
 
+
+  
 
   </body>
 </html>

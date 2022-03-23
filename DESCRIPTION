@@ -31,7 +31,7 @@ Imports:
     scales,
     pROC,
     stats
-RoxygenNote: 7.1.0.9000
+RoxygenNote: 7.1.2
 Suggests: 
     testthat,
     roxygen2,

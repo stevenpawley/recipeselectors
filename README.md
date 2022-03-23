@@ -32,7 +32,10 @@ suggestions.
 - `step_select_vip` provides model-based selection using feature importance
 scores or coefficients. This method allows a `parsnip` model specification to be
 used to select a subset of features based on the models' feature importances or
-coefficients. See below for details.
+coefficients. See below for details. Note, that this step will eventually be
+deprecated in favor of separate steps that contain the specific models that are
+most commonly used for feature selection such as `step_select_forests`, 
+`step_select_tree` and `step_select_linear`.
 
 - `step_select_boruta` provides a Boruta feature selection step.
 
@@ -45,14 +48,6 @@ Methods that are planned to be added:
 - Relief-based methods (CORElearn package)
 
 - Ensemble feature selection (EFS package)
-
-Considering:
-
-- Decision tree feature selection (with tunable arguments)
-
-- Random forest feature selection (with tunable arguments)
-
-- Boosted trees feature selection (with tunable arguments)
 
 ## Notes on Wrapper Feature Selection Methods
 
@@ -67,8 +62,8 @@ one score per feature. The base model is specified in the step using the `model`
 parameter.
 
 A limitation is that the model used in the `step_select_vip` cannot be tuned.
-This step is likely to be superceded in the future with a more appropriate
-structure that allows both variable selection and tuning. 
+This step will be replaced by a more appropriate structure that allows both
+variable selection and tuning for specific model types.
 
 The parsnip package does not currently contain a method of pulling feature 
 importance scores from models that support them. The `recipeselectors` package
