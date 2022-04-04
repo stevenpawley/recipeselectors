@@ -41,7 +41,7 @@ use to calculate the feature importance scores.}
 been estimated.}
 
 \item{engine}{A supported rand_forest engine that is supported by parsnip.
-The default is "glmnet".}
+The default is "glm".}
 
 \item{penalty}{A non-negative number representing the total amount of
 regularization (specific engines only).}
@@ -84,10 +84,7 @@ a `step_select_linear` object.
 \description{
 `step_select_linear` creates a *specification* of a recipe step that selects
 a subset of predictors based on the ranking of the magnitude of coefficients
-provided by a `parsnip::linear_reg`, `parsnip::logistic_reg` or
-`parsnip::multinom_reg` model. The type of model is selected automatically
-depending on the type of the outcome, whether it is numeric or the number of
-levels in the outcome for classification cases.
+provided by a `parsnip::linear_reg` or `parsnip::logistic_reg` model.
 }
 \examples{
 library(recipes)

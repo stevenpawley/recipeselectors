@@ -2,7 +2,6 @@
 % Please edit documentation in R/step_select_forests.R
 \name{step_select_forests}
 \alias{step_select_forests}
-\alias{tidy.step_select_forests}
 \title{Feature selection step using a random forest feature importance scores}
 \usage{
 step_select_forests(
@@ -23,8 +22,6 @@ step_select_forests(
   skip = FALSE,
   id = recipes::rand_id("select_forests")
 )
-
-\method{tidy}{step_select_forests}(x, ...)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the sequence of
@@ -82,8 +79,6 @@ processing the outcome variable(s)). Care should be taken when using skip =
 TRUE as it may affect the computations for subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it.}
-
-\item{x}{A `step_select_forests` object.}
 }
 \value{
 a `step_select_forests` object.

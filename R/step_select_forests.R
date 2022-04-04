@@ -138,7 +138,6 @@ step_select_forests_new <- function(terms, role, trained, outcome, engine,
 
 #' @export
 prep.step_select_forests <- function(x, training, info = NULL, ...) {
-
   # translate the terms arguments
   x_names <- recipes::terms_select(terms = x$terms, info = info)
   y_name <- recipes::terms_select(x$outcome, info = info)
@@ -224,7 +223,7 @@ print.step_select_forests <- function(x, width = max(20, options()$width - 30),
   invisible(x)
 }
 
-#' @rdname step_select_forests
+#' @rdname tidy.recipe
 #' @param x A `step_select_forests` object.
 #' @export
 tidy.step_select_forests <- function(x, ...) {

@@ -2,13 +2,11 @@ library(testthat)
 library(recipes)
 library(tibble)
 library(parsnip)
+
 data("iris")
 
 test_that("step_select_forests, execution using top_p", {
   skip_if_not_installed("ranger")
-
-  irisX <- iris[-5]
-  y <- iris$Species
 
   rec <- iris %>%
     recipe(Species ~.) %>%
@@ -20,6 +18,7 @@ test_that("step_select_forests, execution using top_p", {
     )
 
   prepped <- prep(rec)
+  tidy(rec, number = 1)
   selected <- juice(prepped)
 
   expect_length(names(selected), 3)
