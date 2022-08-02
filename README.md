@@ -1,3 +1,7 @@
+# Note
+
+The package recipeselectors is changing its name to 'colino'. Continued package development and eventual release top CRAN will occur from the 'stevenpawley/colino' repository.
+
 # recipeselectors
 
 The goal of recipeselectors is to provide extra supervised feature selection
