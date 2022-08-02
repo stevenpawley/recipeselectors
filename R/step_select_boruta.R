@@ -144,7 +144,7 @@ bake.step_select_boruta <- function(object, new_data, ...) {
 print.step_select_boruta <- function(x, width = max(20, options()$width - 30), ...) {
   cat("Boruta feature selection")
 
-  if(recipes::is_trained(x)) {
+  if (recipes::is_trained(x)) {
     n <- length(x$exclude)
     cat(paste0(" (", n, " excluded)"))
   }

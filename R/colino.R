@@ -1,7 +1,7 @@
-#' recipeselectors: A collection of steps for feature selection to use with the
+#' colino: A collection of steps for feature selection to use with the
 #' 'recipes' package
 #'
-#' \pkg{recipeselectors} provides a collection of additional step objects
+#' \pkg{colino} provides a collection of additional step objects
 #' related to feature selection to be used with the 'recipes' package.
 #'
 #' @examples
@@ -34,5 +34,5 @@
 #' @author Steven Pawley, \email{dr.stevenpawley@@gmail.com}
 
 #' @docType package
-#' @name recipeselectors
+#' @name colino
 NULL

@@ -1,15 +1,21 @@
-Package: recipeselectors
+Package: colino
 Type: Package
-Title: Extra Recipes Steps for Supervised Feature Selection
+Title: Recipes Steps for Supervised Filter-Based Feature Selection
 Version: 0.0.1
 Authors@R: 
     person(given = "Steven",
            family = "Pawley",
            role = c("aut", "cre"),
            email = "dr.stevenpawley@gmail.com")
+    person(given = "Max",
+           family = "Kuhn",
+           role = c("aut", "cre"),
+           email = "max@rstudio.com")
 Maintainer: Steven Pawley <dr.stevenpawley@gmail.com>
-Description: Provides additional steps for supervised feature selection to be 
-    used with the 'recipes' package.
+Description: Provides supervised selection methods to be used as preprocessing 
+    steps alongside the 'recipes' package. These steps represent filter-based
+    methods where the features are ranked according to the feature selection 
+    method and a subset of features are retained.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -31,7 +37,7 @@ Imports:
     scales,
     pROC,
     stats
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Suggests: 
     testthat,
     roxygen2,

@@ -130,7 +130,7 @@ prep.step_select_xtab <- function(x, training, info = NULL, ...) {
   recipes::check_type(training[, y_name], quant = FALSE)
   x_names <- recipes::terms_select(x$terms, info = info, empty_fun = I)
 
-  if(length(x_names) > 0) {
+  if (length(x_names) > 0) {
 
     recipes::check_type(training[, x_names], quant = FALSE)
 
@@ -179,7 +179,7 @@ bake.step_select_xtab <- function(object, new_data, ...) {
 print.step_select_xtab <- function(x, width = max(20, options()$width - 30), ...) {
   cat("Association test feature selection")
 
-  if(recipes::is_trained(x)) {
+  if (recipes::is_trained(x)) {
     n <- length(x$exclude)
     cat(paste0(" (", n, " excluded)"))
   }
@@ -207,7 +207,7 @@ tunable.step_select_xtab <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),
     call_info = list(
-      list(pkg = "recipeselectors", fun = "top_p"),
+      list(pkg = "colino", fun = "top_p"),
       list(pkg = "dials", fun = "threshold", range = c(-10, -1))
     ),
     source = "recipe",

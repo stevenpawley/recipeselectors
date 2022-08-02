@@ -237,7 +237,7 @@ tunable.step_select_tree <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold", "cost_complexity", "tree_depth", "min_n"),
     call_info = list(
-      list(pkg = "recipeselectors", fun = "top_p"),
+      list(pkg = "colino", fun = "top_p"),
       list(pkg = "dials", fun = "threshold", range = c(0, 1)),
       list(pkg = "dials", fun = "cost_complexity", range = c(-10, -1),
            trans = scales::log10_trans()),
