@@ -1,6 +1,6 @@
 # Note
 
-The package recipeselectors is changing its name to 'colino'. Continued package development and eventual release top CRAN will occur from the 'stevenpawley/colino' repository.
+The package recipeselectors is changing its name to 'colino'. Continued package development and eventual release top CRAN will occur from the 'https://github.com/stevenpawley/colino' repository.
 
 # recipeselectors
 
