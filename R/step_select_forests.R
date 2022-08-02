@@ -223,7 +223,7 @@ print.step_select_forests <- function(x, width = max(20, options()$width - 30),
   invisible(x)
 }
 
-#' @rdname step_select_forests
+#' @rdname tidy.recipe
 #' @param x A `step_select_forests` object.
 #' @export
 tidy.step_select_forests <- function(x, ...) {
@@ -243,7 +243,7 @@ tunable.step_select_forests <- function(x, ...) {
   tibble(
     name = c("top_p", "threshold", "mtry", "trees", "min_n"),
     call_info = list(
-      list(pkg = "colino", fun = "top_p"),
+      list(pkg = "recipeselectors", fun = "top_p"),
       list(pkg = "dials", fun = "threshold", range = c(0, 1)),
       list(pkg = "dials", fun = "mtry", range = c(1L, dials::unknown())),
       list(pkg = "dials", fun = "trees", range = c(1L, 2000L)),

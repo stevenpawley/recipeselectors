@@ -16,9 +16,6 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/filtro.html</loc>
-  </url>
-  <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
@@ -62,9 +59,6 @@
   </url>
   <url>
     <loc>/reference/step_select_mrmr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/step_select_relief.html</loc>
   </url>
   <url>
     <loc>/reference/step_select_roc.html</loc>

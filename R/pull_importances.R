@@ -7,9 +7,9 @@
 #'
 #' Most of the basic models within the parsnip package that support feature
 #' importances are implemented (call `methods(pull_importances)` to list models
-#' that are currently implemented). If need to pull the feature importance
-#' scores from a model that is not currently supported in this package, then you
-#' can add a class to the pull_importances generic function which returns a
+#' that are currently implemented). If need to pull the feature importance scores
+#' from a model that is not currently supported in this package, then you can
+#' add a class to the pull_importances generic function which returns a
 #' two-column tibble:
 #'
 #' @param object A `model_fit` object.

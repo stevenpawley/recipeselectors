@@ -202,7 +202,7 @@ tunable.step_select_roc <- function(x, ...) {
   tibble::tibble(
     name = c("top_p", "threshold"),
     call_info = list(
-      list(pkg = "colino", fun = "top_p"),
+      list(pkg = "recipeselectors", fun = "top_p"),
       list(pkg = "dials", fun = "threshold", range = c(0, 1))
     ),
     source = "recipe",
